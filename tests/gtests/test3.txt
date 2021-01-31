@@ -1,0 +1,16 @@
+x = 5;
+a = 1;
+b = 1;
+ans = 0;
+
+while(x > 3) {
+    b = b + 1;
+    a = a * 2;
+    c = a * x + x / b;
+
+   ans = c + ans;
+
+   x = x - 1;
+}
+
+print ans * 2 - 8;
