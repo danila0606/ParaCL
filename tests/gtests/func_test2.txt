@@ -1,0 +1,6 @@
+
+a = 5;
+b = 10;
+foo = func(x, y) { x + y * 10; }
+c = foo(a + b, b);
+print c;

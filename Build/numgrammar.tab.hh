@@ -390,13 +390,24 @@ namespace yy {
       // math_op
       // scope
       // inside_scope
+      // func_scope
+      // f_inside_scope
+      // return
       char dummy1[sizeof (Node*)];
 
       // VALUE
-      char dummy2[sizeof (double)];
+      char dummy2[sizeof (int)];
 
       // VARIABLE
       char dummy3[sizeof (std::string)];
+
+      // PARAMS
+      // PARAMS_C
+      char dummy4[sizeof (std::vector<Node*>)];
+
+      // ARGS
+      // ARGS_C
+      char dummy5[sizeof (std::vector<std::string>)];
     };
 
     /// The size of the largest semantic type.
@@ -465,9 +476,13 @@ namespace yy {
     PRINT = 275,                   // "print"
     SCAN = 276,                    // "?"
     SCOLON = 277,                  // ";"
-    ERROR = 278,                   // ERROR
-    VALUE = 279,                   // VALUE
-    VARIABLE = 280                 // VARIABLE
+    FUNCTION = 278,                // "func"
+    RETURN = 279,                  // "return"
+    COLON = 280,                   // ":"
+    COMMA = 281,                   // ","
+    ERROR = 282,                   // ERROR
+    VALUE = 283,                   // VALUE
+    VARIABLE = 284                 // VARIABLE
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -484,7 +499,7 @@ namespace yy {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 30, ///< Number of tokens.
+        YYNTOKENS = 34, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -509,25 +524,38 @@ namespace yy {
         S_PRINT = 20,                            // "print"
         S_SCAN = 21,                             // "?"
         S_SCOLON = 22,                           // ";"
-        S_ERROR = 23,                            // ERROR
-        S_VALUE = 24,                            // VALUE
-        S_VARIABLE = 25,                         // VARIABLE
-        S_26_ = 26,                              // '+'
-        S_27_ = 27,                              // '-'
-        S_28_ = 28,                              // '*'
-        S_29_ = 29,                              // '/'
-        S_YYACCEPT = 30,                         // $accept
-        S_exprLvl1 = 31,                         // exprLvl1
-        S_exprLvl2 = 32,                         // exprLvl2
-        S_exprLvl3 = 33,                         // exprLvl3
-        S_assignment = 34,                       // assignment
-        S_stream = 35,                           // stream
-        S_condition = 36,                        // condition
-        S_math_op = 37,                          // math_op
-        S_scope = 38,                            // scope
-        S_inside_scope = 39,                     // inside_scope
-        S_begin_scope = 40,                      // begin_scope
-        S_end_scope = 41                         // end_scope
+        S_FUNCTION = 23,                         // "func"
+        S_RETURN = 24,                           // "return"
+        S_COLON = 25,                            // ":"
+        S_COMMA = 26,                            // ","
+        S_ERROR = 27,                            // ERROR
+        S_VALUE = 28,                            // VALUE
+        S_VARIABLE = 29,                         // VARIABLE
+        S_30_ = 30,                              // '+'
+        S_31_ = 31,                              // '-'
+        S_32_ = 32,                              // '*'
+        S_33_ = 33,                              // '/'
+        S_YYACCEPT = 34,                         // $accept
+        S_exprLvl1 = 35,                         // exprLvl1
+        S_exprLvl2 = 36,                         // exprLvl2
+        S_exprLvl3 = 37,                         // exprLvl3
+        S_assignment = 38,                       // assignment
+        S_stream = 39,                           // stream
+        S_condition = 40,                        // condition
+        S_math_op = 41,                          // math_op
+        S_scope = 42,                            // scope
+        S_inside_scope = 43,                     // inside_scope
+        S_ARGS = 44,                             // ARGS
+        S_ARGS_C = 45,                           // ARGS_C
+        S_PARAMS = 46,                           // PARAMS
+        S_PARAMS_C = 47,                         // PARAMS_C
+        S_func_scope = 48,                       // func_scope
+        S_f_inside_scope = 49,                   // f_inside_scope
+        S_return = 50,                           // return
+        S_begin_scope = 51,                      // begin_scope
+        S_end_scope = 52,                        // end_scope
+        S_f_begin_scope = 53,                    // f_begin_scope
+        S_func = 54                              // func
       };
     };
 
@@ -573,15 +601,28 @@ namespace yy {
       case symbol_kind::S_math_op: // math_op
       case symbol_kind::S_scope: // scope
       case symbol_kind::S_inside_scope: // inside_scope
+      case symbol_kind::S_func_scope: // func_scope
+      case symbol_kind::S_f_inside_scope: // f_inside_scope
+      case symbol_kind::S_return: // return
         value.move< Node* > (std::move (that.value));
         break;
 
       case symbol_kind::S_VALUE: // VALUE
-        value.move< double > (std::move (that.value));
+        value.move< int > (std::move (that.value));
         break;
 
       case symbol_kind::S_VARIABLE: // VARIABLE
         value.move< std::string > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_PARAMS: // PARAMS
+      case symbol_kind::S_PARAMS_C: // PARAMS_C
+        value.move< std::vector<Node*> > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_ARGS: // ARGS
+      case symbol_kind::S_ARGS_C: // ARGS_C
+        value.move< std::vector<std::string> > (std::move (that.value));
         break;
 
       default:
@@ -620,13 +661,13 @@ namespace yy {
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, double&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, int&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const double& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const int& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -640,6 +681,32 @@ namespace yy {
       {}
 #else
       basic_symbol (typename Base::kind_type t, const std::string& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, std::vector<Node*>&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const std::vector<Node*>& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, std::vector<std::string>&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const std::vector<std::string>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -677,15 +744,28 @@ switch (yykind)
       case symbol_kind::S_math_op: // math_op
       case symbol_kind::S_scope: // scope
       case symbol_kind::S_inside_scope: // inside_scope
+      case symbol_kind::S_func_scope: // func_scope
+      case symbol_kind::S_f_inside_scope: // f_inside_scope
+      case symbol_kind::S_return: // return
         value.template destroy< Node* > ();
         break;
 
       case symbol_kind::S_VALUE: // VALUE
-        value.template destroy< double > ();
+        value.template destroy< int > ();
         break;
 
       case symbol_kind::S_VARIABLE: // VARIABLE
         value.template destroy< std::string > ();
+        break;
+
+      case symbol_kind::S_PARAMS: // PARAMS
+      case symbol_kind::S_PARAMS_C: // PARAMS_C
+        value.template destroy< std::vector<Node*> > ();
+        break;
+
+      case symbol_kind::S_ARGS: // ARGS
+      case symbol_kind::S_ARGS_C: // ARGS_C
+        value.template destroy< std::vector<std::string> > ();
         break;
 
       default:
@@ -778,23 +858,23 @@ switch (yykind)
       symbol_type (int tok, location_type l)
         : super_type(token_type (tok), std::move (l))
       {
-        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::ADD || tok == token::SUB || tok == token::MUL || tok == token::DIV || tok == token::ASSIGN || tok == token::LB || tok == token::RB || tok == token::LFB || tok == token::RFB || tok == token::GREATER || tok == token::GREATER_OR_EQ || tok == token::LESS || tok == token::LESS_OR_EQ || tok == token::EQUAL || tok == token::NOT_EQUAL || tok == token::IF || tok == token::WHILE || tok == token::PRINT || tok == token::SCAN || tok == token::SCOLON || tok == token::ERROR || tok == 43 || tok == 45 || tok == 42 || tok == 47);
+        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::ADD || tok == token::SUB || tok == token::MUL || tok == token::DIV || tok == token::ASSIGN || tok == token::LB || tok == token::RB || tok == token::LFB || tok == token::RFB || tok == token::GREATER || tok == token::GREATER_OR_EQ || tok == token::LESS || tok == token::LESS_OR_EQ || tok == token::EQUAL || tok == token::NOT_EQUAL || tok == token::IF || tok == token::WHILE || tok == token::PRINT || tok == token::SCAN || tok == token::SCOLON || tok == token::FUNCTION || tok == token::RETURN || tok == token::COLON || tok == token::COMMA || tok == token::ERROR || tok == 43 || tok == 45 || tok == 42 || tok == 47);
       }
 #else
       symbol_type (int tok, const location_type& l)
         : super_type(token_type (tok), l)
       {
-        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::ADD || tok == token::SUB || tok == token::MUL || tok == token::DIV || tok == token::ASSIGN || tok == token::LB || tok == token::RB || tok == token::LFB || tok == token::RFB || tok == token::GREATER || tok == token::GREATER_OR_EQ || tok == token::LESS || tok == token::LESS_OR_EQ || tok == token::EQUAL || tok == token::NOT_EQUAL || tok == token::IF || tok == token::WHILE || tok == token::PRINT || tok == token::SCAN || tok == token::SCOLON || tok == token::ERROR || tok == 43 || tok == 45 || tok == 42 || tok == 47);
+        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::ADD || tok == token::SUB || tok == token::MUL || tok == token::DIV || tok == token::ASSIGN || tok == token::LB || tok == token::RB || tok == token::LFB || tok == token::RFB || tok == token::GREATER || tok == token::GREATER_OR_EQ || tok == token::LESS || tok == token::LESS_OR_EQ || tok == token::EQUAL || tok == token::NOT_EQUAL || tok == token::IF || tok == token::WHILE || tok == token::PRINT || tok == token::SCAN || tok == token::SCOLON || tok == token::FUNCTION || tok == token::RETURN || tok == token::COLON || tok == token::COMMA || tok == token::ERROR || tok == 43 || tok == 45 || tok == 42 || tok == 47);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      symbol_type (int tok, double v, location_type l)
+      symbol_type (int tok, int v, location_type l)
         : super_type(token_type (tok), std::move (v), std::move (l))
       {
         YY_ASSERT (tok == token::VALUE);
       }
 #else
-      symbol_type (int tok, const double& v, const location_type& l)
+      symbol_type (int tok, const int& v, const location_type& l)
         : super_type(token_type (tok), v, l)
       {
         YY_ASSERT (tok == token::VALUE);
@@ -1209,6 +1289,66 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_FUNCTION (location_type l)
+      {
+        return symbol_type (token::FUNCTION, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_FUNCTION (const location_type& l)
+      {
+        return symbol_type (token::FUNCTION, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_RETURN (location_type l)
+      {
+        return symbol_type (token::RETURN, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_RETURN (const location_type& l)
+      {
+        return symbol_type (token::RETURN, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_COLON (location_type l)
+      {
+        return symbol_type (token::COLON, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_COLON (const location_type& l)
+      {
+        return symbol_type (token::COLON, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_COMMA (location_type l)
+      {
+        return symbol_type (token::COMMA, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_COMMA (const location_type& l)
+      {
+        return symbol_type (token::COMMA, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_ERROR (location_type l)
       {
         return symbol_type (token::ERROR, std::move (l));
@@ -1224,14 +1364,14 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_VALUE (double v, location_type l)
+      make_VALUE (int v, location_type l)
       {
         return symbol_type (token::VALUE, std::move (v), std::move (l));
       }
 #else
       static
       symbol_type
-      make_VALUE (const double& v, const location_type& l)
+      make_VALUE (const int& v, const location_type& l)
       {
         return symbol_type (token::VALUE, v, l);
       }
@@ -1345,7 +1485,7 @@ switch (yykind)
 
 #if YYDEBUG
     // YYRLINE[YYN] -- Source line where rule number YYN was defined.
-    static const unsigned char yyrline_[];
+    static const short yyrline_[];
     /// Report on the debug stream that the rule \a r is going to be reduced.
     virtual void yy_reduce_print_ (int r) const;
     /// Print the state stack on the debug stream.
@@ -1572,8 +1712,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 51,     ///< Last index in yytable_.
-      yynnts_ = 12,  ///< Number of nonterminal symbols.
+      yylast_ = 102,     ///< Last index in yytable_.
+      yynnts_ = 21,  ///< Number of nonterminal symbols.
       yyfinal_ = 2 ///< Termination state number.
     };
 
@@ -1585,7 +1725,7 @@ switch (yykind)
 
 
 } // yy
-#line 1589 "numgrammar.tab.hh"
+#line 1729 "numgrammar.tab.hh"
 
 
 

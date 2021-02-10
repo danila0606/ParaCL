@@ -1,0 +1,13 @@
+
+a = 5;
+b = 10;
+
+foo = func(x, y) {
+    if (x == 5) {
+
+        return 15;
+    }
+    x * y;
+}
+c = foo(a, b);
+print c;

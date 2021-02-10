@@ -46,6 +46,12 @@ VARIABLE        {LETTER}{LETTER_OR_DIGIT}*
 "while"                     return yy::parser::token_type::WHILE;
 "print"                     return yy::parser::token_type::PRINT;
 "?"                         return yy::parser::token_type::SCAN;
+
+"func"                      return yy::parser::token_type::FUNCTION;
+"return"                    return yy::parser::token_type::RETURN;
+":"                         return yy::parser::token_type::COLON;
+","                         return yy::parser::token_type::COMMA;
+
 {DOUBLE}                    return yy::parser::token_type::VALUE;
 {VARIABLE}                  return yy::parser::token_type::VARIABLE;
 .			                return PushGrammarError();

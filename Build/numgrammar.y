@@ -31,7 +31,9 @@
 
     }
 
-    extern ScopeNode* CurScope;
+    extern BraceNode* CurScope;
+    extern FuncTable func_table;
+    FuncScopeNode* CurFunc;
 }
 
 %token
@@ -59,12 +61,19 @@
   SCAN			"?"
   SCOLON  		";"
 
+  FUNCTION      "func"
+  RETURN        "return"
+  COLON         ":"
+  COMMA         ","
+
   ERROR
 ;
 
-%token <double> VALUE
+%token <int> VALUE
 %token <std::string> VARIABLE
-//%token <std::string> error
+
+%nterm <int> PAR
+
 
 %nterm <Node*> exprLvl1 exprLvl2 exprLvl3
 %nterm <Node*> assignment
@@ -73,6 +82,17 @@
 %nterm <Node*> math_op
 %nterm <Node*> scope
 %nterm <Node*> inside_scope
+%nterm <std::vector<std::string>> ARGS
+%nterm <std::vector<std::string>> ARGS_C
+%nterm <std::vector<Node*>> PARAMS
+%nterm <std::vector<Node*>> PARAMS_C
+
+%nterm <Node*> func_scope
+%nterm <Node*> f_inside_scope
+
+%nterm <Node*> return
+
+//%nterm <Node*> func
 //%nterm <Node*> ERR
 
 
@@ -89,7 +109,7 @@ scope:
 
 begin_scope:
 	LFB  								{
-											ScopeNode* child = new ScopeNode (@1,CurScope);
+											ScopeNode* child = new ScopeNode (@1,CurScope, CurFunc);
 											CurScope = child;
 										}
 ;
@@ -98,7 +118,12 @@ inside_scope:
 	inside_scope assignment SCOLON 		{ CurScope->PushNode ($2); }
 |	inside_scope stream SCOLON 		    { CurScope->PushNode ($2); }
 |	inside_scope condition				{ CurScope->PushNode ($2); }
-//|   ERR                                 {CurScope->PushNode ($1);}
+|   inside_scope func                   { /* nothing */ }
+|   inside_scope func SCOLON            { /* nothing */ }
+|   inside_scope exprLvl1 SCOLON        { CurScope->PushNode($2); }
+|   inside_scope return SCOLON        { CurScope->PushNode($2); }
+|   inside_scope scope                 { CurScope->PushNode($2); }
+//|   ERR                               { CurScope->PushNode ($1); }
 |										{}
 ;
 
@@ -106,17 +131,92 @@ end_scope:
 	RFB	{ }
 ;
 
-//ERR :
-//    ERR  error SCOLON {$$ = new ValueNode(0, @2);}
-//|   LB error RB {$$ = new ValueNode(0, @2);}
-//|   error {$$ = new ValueNode(0, @1);}
-//|   error ERR  SCOLON {$$ = new ValueNode(0, @1);}
-//|   error SCOLON {$$ = new ValueNode(0, @1);}
-//;
+
+
+func_scope:
+	f_begin_scope f_inside_scope end_scope			{ $$ = CurScope; CurScope = CurScope->GetParent(); CurFunc = nullptr;}
+;
+
+f_begin_scope:
+	LFB  								{
+
+											BraceNode* child = new FuncScopeNode (@1, CurScope);
+											CurScope = child;
+											CurFunc = static_cast<FuncScopeNode*>(child);
+										}
+;
+
+f_inside_scope:
+	f_inside_scope assignment SCOLON 		{ CurScope->PushNode ($2); }
+|	f_inside_scope stream SCOLON 		    { CurScope->PushNode ($2); }
+|	f_inside_scope condition				{ CurScope->PushNode ($2); }
+|   f_inside_scope exprLvl1 SCOLON      { CurScope->PushNode($2); }
+//|   inside_scope func                   { /* nothing */ }
+//|   inside_scope func SCOLON            { /* nothing */ }
+//|   ERR                               { CurScope->PushNode ($1); }
+|										{}
+;
 
 condition:
 	IF LB math_op RB scope	    { $$ = new ConditionNode($3, static_cast<ScopeNode*>($5), NodeType::IF, @1); }
 |	WHILE LB math_op RB scope	{ $$ = new ConditionNode($3, static_cast<ScopeNode*>($5), NodeType::WHILE, @1); }
+;
+
+func :
+
+    VARIABLE ASSIGN FUNCTION LB ARGS RB func_scope { FuncScopeNode* f_ptr = static_cast<FuncScopeNode*> ($7);
+                                                     f_ptr->SetArgs($5);
+                                                     CurScope->AddFuncVariable($1);
+                                                     //CurScope->AddValue($1, $5.size());
+                                                     func_table.AddFunc($1, f_ptr);
+                                                    }
+
+
+;
+
+ARGS :
+
+    ARGS_C {     $$ = $1;    }
+|          {/*no arguments */}
+
+;
+
+
+ARGS_C :
+        VARIABLE COMMA ARGS_C { $$.push_back($1);
+
+                                for (const auto& elem : $3)
+                                   $$.push_back(elem);                     }
+    |   VARIABLE              { $$.push_back($1);                    }
+;
+
+PARAMS :
+
+
+    PARAMS_C {     $$ = $1;    }
+|          {/*no arguments */}
+
+;
+
+
+PARAMS_C :
+        exprLvl1 COMMA PARAMS_C {
+                                $$.push_back($1);
+
+                                for (const auto& elem : $3)
+                                    $$.push_back(elem);
+
+                                                     }
+    |   exprLvl1                {     $$.push_back($1);                     }
+;
+
+
+return :
+    RETURN exprLvl1 {   if (CurFunc == nullptr)
+                            assert(0);
+
+                        $$ = new ReturnNode(@1, $2, CurFunc);
+                    }
 ;
 
 math_op:
@@ -131,11 +231,23 @@ math_op:
 assignment:
 	VARIABLE ASSIGN exprLvl1	{
 \
-									CurScope->AddValue($1, 0.0);
+									CurScope->AddValue($1, 0);
 
 								  	$$ = new AssignNode(new VariableNode($1, @1), $3, @2);
 
 								}
+
+|   VARIABLE ASSIGN VARIABLE LB PARAMS RB  {
+
+            if (!CurScope->GetFuncVariable ($3))
+                driver->EmergencyExit(@3, yy::Errors::non_existent_variable);
+
+            CurScope->AddValue($1, 0);
+
+            $$ = new AssignNode(new VariableNode($1, @1), new FuncNode(@3,$3, $5), @2);
+
+                                 }
+
 	//| ERR {$$ = new VariableNode(0, @1);}
 ;
 
@@ -162,19 +274,17 @@ exprLvl2:
 
 exprLvl3:
 	LB exprLvl1 RB  { $$ = $2; }
-| 	VALUE   		{ $$ = new ValueNode($1, @1);
-
-            }
+| 	VALUE   		{ $$ = new ValueNode($1, @1); }
 |	VARIABLE		{
 											int x;
-											if (!CurScope->GetValue ($1, x))
-											    driver->EmergencyExit(@1, yy::Errors::non_existent_variable);
+											if (!CurScope->GetValue ($1, x)) {
+									            if (CurScope->WhoAmI() == NodeType::SCOPE)
+                                                    driver->EmergencyExit(@1, yy::Errors::non_existent_variable);
 
+                                            CurScope->AddUnknownVariable($1);
+                                            }
 											$$ = new VariableNode($1, @1);
-
 					}
-
-
 ;
 
 %%

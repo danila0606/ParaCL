@@ -1,7 +1,8 @@
 #include "driver.h"
 
 
-ScopeNode* CurScope = nullptr;
+BraceNode* CurScope = nullptr;
+FuncTable func_table;
 
 yy::Driver::Driver (std::ifstream& in, std::ostream& out):
         lexer_ (new MyLexer), out_(out)
@@ -16,7 +17,7 @@ yy::parser::token_type yy::Driver::yylex (yy::parser::semantic_type* yylval, yy:
     switch (tt) {
         case yy::parser::token_type::VALUE: {
 
-            yylval->as <double> () = std::stod (lexer_->YYText ());
+            yylval->as <int> () = std::stod (lexer_->YYText ());
             break;
         }
         case yy::parser::token_type::VARIABLE: {
