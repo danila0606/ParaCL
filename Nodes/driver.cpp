@@ -101,4 +101,5 @@ yy::Driver::~Driver() {
 
     delete lexer_;
     delete CurScope;
+    //func_table.DeleteAll();
 }

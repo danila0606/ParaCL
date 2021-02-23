@@ -39,16 +39,11 @@ int BraceNode::Calc() {
 
     if (GetType() == NodeType::FUNCSCOPE) {
         for (auto &exp : expressions_) {
-            //std::cout<<CurScope<<std::endl;
-
 
             ans = exp->Calc();
 
-
-            if (!returned_.empty()) {
+            if (!returned_.empty())
                 return returned_[0];
-
-            }
 
             ++i;
         }
@@ -57,7 +52,7 @@ int BraceNode::Calc() {
     else if (GetType() == NodeType::SCOPE) {
 
         for (auto &exp : expressions_) {
-            //std::cout<<CurScope<<std::endl;
+
             ans = exp->Calc();
 
             if (ThisFunc_) {
@@ -82,13 +77,11 @@ void BraceNode::AddReturnedValue(int ans) {
 
     if (GetType() == NodeType::FUNCSCOPE) {
         returned_.push_back(ans);
-        //std::cout<<"1\n";
     }
     else if (GetType() == NodeType::SCOPE) {
         if (!GetParent()) {
-            //std::cout<<"2\n";
+
             GetParent()->AddReturnedValue(ans);
-            //std::cout<<"3\n";
         }
         else
             assert(0);
@@ -98,6 +91,22 @@ void BraceNode::AddReturnedValue(int ans) {
 
 }
 
+std::unordered_map<std::string, int> BraceNode::GetValuess() const {
+
+    if (ThisFunc_)
+        return  ThisFunc_->GetValuess();
+    else
+        return table_;
+}
+
+void BraceNode::UpdateValuess(const std::unordered_map<std::string, int>& table) {
+
+
+    if (ThisFunc_)
+        ThisFunc_->UpdateValuess(table);
+    else
+        table_ = table;
+}
 
 //_______________________________________________________________
 
@@ -111,7 +120,11 @@ bool ScopeNode::AddValue(const std::string &varname, int value) {
             int x = 0;
             if (parentScope_->GetValue(varname, x))
                 return parentScope_->AddValue(varname, value);
-            else
+            else if (WhoAmI() == NodeType::FUNCSCOPE) {
+
+
+
+            } else
                 table_[varname] = value;
         }
         else
@@ -169,6 +182,12 @@ bool ScopeNode::GetFuncVariable(const std::string& name) const {
         return true;
 }
 
+NodeType ScopeNode::WhoAmI() const {
+    if (!parentScope_)
+        return NodeType::SCOPE;
+    else
+        return parentScope_->WhoAmI();
+}
 //_______________________________________________________________
 
 
@@ -203,27 +222,21 @@ bool FuncScopeNode::GetValue(const std::string& varname, int& value) const {
 
 void FuncScopeNode::SetArgs(std::vector<std::string> args) {
     args_ = std::move(args);
-    for (const auto& elem : args_) {
-        //std::cout<<elem<<" ";
-        CurScope->AddValue(elem, 0);
-    }
+    for (const auto& elem : args_)
+        AddValue(elem, 0);
 }
 
 int FuncScopeNode::Execute(std::vector<int> elems) {
 
-    if (elems.size() != args_.size())
-        assert(0);
-
-
-    for (int i = 0; i < elems.size(); ++i) {
-      //  std::cout<<args_[i]<<" "<<elems[i]<<std::endl;
-        AddValue(args_[i], elems[i]);
-        not_in_args_.erase(args_[i]);
-       // std::cout<<args_[i]<<" "<<elems[i]<<std::endl;
+    if (elems.size() != args_.size()) {
+        throw std::invalid_argument("When calling the function: " + func_name +" used: "
+            + std::to_string(elems.size()) + " args, instead of: " + std::to_string(args_.size()));
     }
 
-    if (!not_in_args_.empty())
-        assert(0);
+    for (int i = 0; i < elems.size(); ++i) {
+
+        AddValue(args_[i], elems[i]);
+    }
 
     return Calc();
 }
@@ -237,6 +250,8 @@ bool FuncScopeNode::GetFuncVariable(const std::string& name) const {
 
     return !(FuncList_.find(name) == FuncList_.end());
 }
+
+
 
 //_______________________________________________________________
 
@@ -254,8 +269,7 @@ int VariableNode::Calc() {
     int x;
 
     if (!CurScope->GetValue(varname_, x)) {
-        std::cout<<"OOOOOOps "<<varname_<<std::endl;
-        exit(0);
+        assert(0);
     }
 
     return x;
@@ -323,15 +337,15 @@ int AssignNode::Calc() {
     if(left_->GetType()!= NodeType::VARIABLE)
         assert(0);
 
+
     if (right_->GetType() == NodeType::FUNCTION) {
         int rhs = right_->Calc();
-        CurScope = OldScope;
+        //CurScope = OldScope;
 
         CurScope->AddValue(left_->GetName(), rhs);
     }
-    else {
+    else
         CurScope->AddValue(left_->GetName(), right_->Calc());
-    }
 
     return 3;
 }
@@ -350,7 +364,7 @@ int ConditionNode::Calc() {
                 CurScope->Calc();
                 CurScope = scope_->GetParent();
             }
-                return 0.0;
+                return 0;
         }
         case (NodeType::WHILE) : {
             while (condition_->Calc() != 0) {
@@ -405,7 +419,7 @@ int ScanNode::Calc() {
 
 //______________________ArgsNode_________________________________
 
-int ArgsNode::Calc() {
+/*int ArgsNode::Calc() {
 
     return names_.size();
 
@@ -421,7 +435,7 @@ bool ArgsNode::AddArg(std::string name) {
 
     names_.push_back(name);
     return true;
-}
+}*/
 
 //_______________________________________________________________
 
@@ -444,7 +458,6 @@ int FuncNode::Calc() {
 
 int ReturnNode::Calc() {
 
-    std::cout <<"returnCalc\n";
     ReturnTo_->AddReturnedValue(arg_->Calc());
     return 228;
 }
@@ -455,23 +468,131 @@ int ReturnNode::Calc() {
 
 //______________________FuncTable_________________________________
 
-void FuncTable::AddFunc(const std::string& name, FuncScopeNode* f_Scope) {
+void FuncTable::AddLocalFunc(const std::string& name, FuncScopeNode* f_Scope) {
 
-    table[name] = f_Scope;
+    auto it_local = local_table.find(name);
+    auto it_repeat = repeated_table.find(name);
+
+    auto it_global = global_table.find(name);
+
+    if (it_global != global_table.end())
+        assert(0);
+
+    if (it_local!= local_table.end())
+        delete local_table[name];
+
+    if (it_repeat != repeated_table.end())
+        repeated_table.erase(name);
+
+    local_table[name] = f_Scope;
+
 }
 
-bool FuncTable::Check(const std::string& name, size_t args_num) const {
-    return table.count(name);
+void FuncTable::AddGlobalFunc(const std::string& name, FuncScopeNode* f_Scope, bool update ) {
+    auto it_global = global_table.find(name);
+
+    auto it_local = local_table.find(name);
+    auto it_repeat = repeated_table.find(name);
+
+    if (it_local!= local_table.end())
+        delete local_table[name];
+
+    if (it_repeat != repeated_table.end())
+        repeated_table.erase(name);
+
+    if (it_global != global_table.end()) {
+        if (update)
+            global_table[name] = f_Scope;
+        else
+            throw std::invalid_argument("the function name is already taken: " + name);
+    }
+    else
+        global_table[name] = f_Scope;
+
 }
+
+void FuncTable::AddRepeatFunc(const std::string& name, const std::string& global_func, bool update) {
+    auto it_global = global_table.find(global_func);
+    auto it_local = local_table.find(name);
+
+    if (it_global != global_table.end()) {
+        if (!update)
+            throw std::invalid_argument("the function name is already taken: " + name);
+    }
+
+
+    if (it_local!= local_table.end())
+        delete local_table[name];
+
+    repeated_table[name] = global_func;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 int FuncTable::Execute(const std::string& name, const std::vector<int>& args) {
 
     OldScope = CurScope;
-    CurScope = table[name];
 
-    return table[name]->Execute(args);
+    std::unordered_map<std::string, int> old_table;
+
+    bool update = false;
+
+    if (CurScope->WhoAmI()== NodeType::FUNCSCOPE) {
+        update = true;
+        old_table = OldScope->GetValuess();
+    }
+
+    auto global_it = global_table.find(name);
+    auto repeat_it = repeated_table.find(name);
+    auto local_it = local_table.find(name);
+
+    int ans = 0;
+
+    if (global_it != global_table.end()) {
+        CurScope = global_table[name];
+        ans = global_table[name]->Execute(args);
+    }
+    else if (repeat_it != repeated_table.end()) {
+        CurScope = global_table[repeated_table[name]];
+        ans = global_table[repeated_table[name]]->Execute(args);
+    }
+    else if (local_it != local_table.end()) {
+        CurScope = local_table[name];
+        ans = local_table[name]->Execute(args);
+    }
+    else
+        assert(0);
+
+
+    if (update) {
+        OldScope->UpdateValuess(old_table);
+    }
+
+    return ans;
 }
 
+void FuncTable::DeleteAll() {
+
+    for (auto& elem : global_table)
+        delete elem.second;
+
+    for (auto& elem : local_table)
+        delete elem.second;
+}
 
 
 //_______________________________________________________________

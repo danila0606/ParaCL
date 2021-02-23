@@ -71,9 +71,7 @@
 
 %token <int> VALUE
 %token <std::string> VARIABLE
-
-%nterm <int> PAR
-
+%nterm <std::string> GLOBAL_FUNC
 
 %nterm <Node*> exprLvl1 exprLvl2 exprLvl3
 %nterm <Node*> assignment
@@ -82,6 +80,7 @@
 %nterm <Node*> math_op
 %nterm <Node*> scope
 %nterm <Node*> inside_scope
+%nterm <Node*> scope_assignment
 %nterm <std::vector<std::string>> ARGS
 %nterm <std::vector<std::string>> ARGS_C
 %nterm <std::vector<Node*>> PARAMS
@@ -91,9 +90,7 @@
 %nterm <Node*> f_inside_scope
 
 %nterm <Node*> return
-
-//%nterm <Node*> func
-//%nterm <Node*> ERR
+%nterm <Node*> function
 
 
 %left '+' '-'
@@ -123,6 +120,7 @@ inside_scope:
 |   inside_scope exprLvl1 SCOLON        { CurScope->PushNode($2); }
 |   inside_scope return SCOLON        { CurScope->PushNode($2); }
 |   inside_scope scope                 { CurScope->PushNode($2); }
+|   inside_scope scope_assignment       {  CurScope->PushNode($2);}
 //|   ERR                               { CurScope->PushNode ($1); }
 |										{}
 ;
@@ -134,23 +132,58 @@ end_scope:
 
 
 func_scope:
-	f_begin_scope f_inside_scope end_scope			{ $$ = CurScope; CurScope = CurScope->GetParent(); CurFunc = nullptr;}
+	 f_begin_scope f_inside_scope end_scope			{ $$ = CurScope; CurScope = CurScope->GetParent(); CurFunc = nullptr;}
 ;
 
 f_begin_scope:
-	LFB  								{
+	LB ARGS RB LFB  					{
+
 
 											BraceNode* child = new FuncScopeNode (@1, CurScope);
+											static_cast<FuncScopeNode*>(child)->SetArgs($2);
+											for (const auto& elem : $2)
+											    child->AddValue(elem, 0);
+
 											CurScope = child;
 											CurFunc = static_cast<FuncScopeNode*>(child);
 										}
+|   LB ARGS RB COLON GLOBAL_FUNC LFB		{
+
+  											BraceNode* child = new FuncScopeNode (@1, CurScope);
+  											static_cast<FuncScopeNode*>(child)->SetArgs($2);
+
+  											static_cast<FuncScopeNode*>(child)->SetName($5);
+
+
+
+  											for (const auto& elem : $2)
+  											    child->AddValue(elem, 0);
+
+  											CurScope = child;
+  											CurFunc = static_cast<FuncScopeNode*>(child);
+  										}
+;
+
+GLOBAL_FUNC :
+    VARIABLE {
+                                                    int x;
+          											if (!CurScope->GetValue($1,x) || !CurScope->GetFuncVariable($1)) {
+
+          											    func_table.AddGlobalFunc($1, nullptr);
+          											    }
+          											else
+          											    assert(0);
+
+          											$$ = $1;
+    }
 ;
 
 f_inside_scope:
-	f_inside_scope assignment SCOLON 		{ CurScope->PushNode ($2); }
-|	f_inside_scope stream SCOLON 		    { CurScope->PushNode ($2); }
-|	f_inside_scope condition				{ CurScope->PushNode ($2); }
-|   f_inside_scope exprLvl1 SCOLON      { CurScope->PushNode($2); }
+	inside_scope assignment SCOLON 		{ CurScope->PushNode ($2); }
+|	inside_scope stream SCOLON 		    { CurScope->PushNode ($2); }
+|	inside_scope condition				{ CurScope->PushNode ($2); }
+|   inside_scope exprLvl1 SCOLON      { CurScope->PushNode($2); }
+|  inside_scope return SCOLON        { CurScope->PushNode($2); }
 //|   inside_scope func                   { /* nothing */ }
 //|   inside_scope func SCOLON            { /* nothing */ }
 //|   ERR                               { CurScope->PushNode ($1); }
@@ -163,14 +196,18 @@ condition:
 ;
 
 func :
+//DNINFISNFINWEPRNFILWEOBFNWIUFOJHIBWEHWBFHWUYBFWUYHBFWUOFBSUORFBOWHSBFOIHWBFOIHSBFOISEBFOISEBFSIFBSOIFBSEIOFBVSOFBISHGBVIOHBSEBFSIEBFi
 
-    VARIABLE ASSIGN FUNCTION LB ARGS RB func_scope { FuncScopeNode* f_ptr = static_cast<FuncScopeNode*> ($7);
-                                                     f_ptr->SetArgs($5);
-                                                     CurScope->AddFuncVariable($1);
-                                                     //CurScope->AddValue($1, $5.size());
-                                                     func_table.AddFunc($1, f_ptr);
-                                                    }
+    VARIABLE ASSIGN FUNCTION func_scope { FuncScopeNode* f_ptr = static_cast<FuncScopeNode*> ($4);
+                                          CurScope->AddFuncVariable($1);
 
+                                          if (!f_ptr->GetName().empty()) {
+                                              func_table.AddGlobalFunc(f_ptr->GetName(), f_ptr, true);
+                                              func_table.AddRepeatFunc($1, f_ptr->GetName(), true);
+                                          }
+                                          else
+                                              func_table.AddLocalFunc($1, f_ptr);
+    }
 
 ;
 
@@ -228,27 +265,33 @@ math_op:
 |	exprLvl1 NOT_EQUAL exprLvl1			{ $$ = new MathOpNode ($1, $3, NodeType::NOT_EQUAL, @2); }
 ;
 
+function :
+//,wfqkmeofjqnw;kjfnbqjkeilfbnqj;fnq;keb e;kvb;qeirfnqierbfhqjbqnbrfcqbwjefq    wefqwfwefwqef
+    VARIABLE LB PARAMS RB {
+        if (!CurScope->GetFuncVariable ($1)) {
+                        if (!func_table.CheckGlobalFunc($1)) {
+
+                                driver->EmergencyExit(@1, yy::Errors::non_existent_variable);
+                            }
+                    }
+
+        $$ = new FuncNode(@1,$1, $3);
+    }
+
 assignment:
 	VARIABLE ASSIGN exprLvl1	{
-\
 									CurScope->AddValue($1, 0);
-
 								  	$$ = new AssignNode(new VariableNode($1, @1), $3, @2);
-
 								}
+;
 
-|   VARIABLE ASSIGN VARIABLE LB PARAMS RB  {
+scope_assignment:
+    VARIABLE ASSIGN scope {
+        CurScope->AddValue($1, 0);
 
-            if (!CurScope->GetFuncVariable ($3))
-                driver->EmergencyExit(@3, yy::Errors::non_existent_variable);
+        $$ = new AssignNode(new VariableNode($1, @1), $3, @2);
 
-            CurScope->AddValue($1, 0);
-
-            $$ = new AssignNode(new VariableNode($1, @1), new FuncNode(@3,$3, $5), @2);
-
-                                 }
-
-	//| ERR {$$ = new VariableNode(0, @1);}
+    }
 ;
 
 stream:
@@ -278,13 +321,14 @@ exprLvl3:
 |	VARIABLE		{
 											int x;
 											if (!CurScope->GetValue ($1, x)) {
-									            if (CurScope->WhoAmI() == NodeType::SCOPE)
                                                     driver->EmergencyExit(@1, yy::Errors::non_existent_variable);
-
-                                            CurScope->AddUnknownVariable($1);
                                             }
 											$$ = new VariableNode($1, @1);
 					}
+
+|    function {
+            $$ = $1;
+          }
 ;
 
 %%

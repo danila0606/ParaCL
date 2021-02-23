@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
 
 try {
 
-    std::ifstream in{"../text.txt"};
+    std::ifstream in{argv[1]};
     if (!in.is_open()) {
         std::cerr << "Cant open file!" << std::endl;
         exit(0);

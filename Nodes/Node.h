@@ -71,20 +71,18 @@ class BraceNode : public Node {
 
 protected:
 
-    std::unordered_map<std::string, double> table_;
+    std::unordered_map<std::string, int> table_;
     std::set<std::string> FuncList_;
 
     std::vector<Node*> expressions_ = {};
 
-    std::set<std::string> not_in_args_;
-
     std::vector<int> returned_;
 
-    FuncScopeNode* ThisFunc_ = nullptr;
+    BraceNode* ThisFunc_ = nullptr;
 
 public:
 
-    explicit BraceNode(const yy::location& l, NodeType type, FuncScopeNode* ThisFunc = nullptr) :
+    explicit BraceNode(const yy::location& l, NodeType type, BraceNode* ThisFunc = nullptr) :
              Node(type, l), ThisFunc_(ThisFunc) {};
 
     virtual bool AddValue(const std::string& varname, int value = 0) = 0;
@@ -93,9 +91,11 @@ public:
     virtual void AddFuncVariable(const std::string& name) = 0;
     virtual bool GetFuncVariable(const std::string& name) const = 0;
 
-    void AddUnknownVariable(const std::string& name) {not_in_args_.insert(name);};
     void AddReturnedValue(int ans);
     bool IsReturned() const {return !returned_.empty();};
+
+    std::unordered_map<std::string, int> GetValuess() const;
+    void UpdateValuess(const std::unordered_map<std::string, int>& table);
 
     bool PushNode(Node* node);
 
@@ -119,6 +119,7 @@ class FuncScopeNode final : public BraceNode {
 
 private:
 
+    std::string func_name = {};
     BraceNode* parentScope_ = nullptr;
     std::vector<std::string> args_;
 
@@ -135,6 +136,8 @@ public:
 
     void SetArgs(std::vector<std::string> args);
 
+    void SetName (const std::string& name) {func_name = name;};
+    std::string GetName () {return func_name;};
 
 public:
 
@@ -165,9 +168,8 @@ public:
 
 public:
 
-    //FuncScopeNode* GetThisFunc() {return ThisFunc_;};
     BraceNode* GetParent() override {return parentScope_;};
-    NodeType WhoAmI() const override {return NodeType::SCOPE;};
+    NodeType WhoAmI() const override;
 
     ~ScopeNode() = default;
 };
@@ -282,7 +284,7 @@ public:
 
 };
 
-class ArgsNode final : public Node {
+/*class ArgsNode final : public Node {
 
 private:
     std::vector<std::string> names_;
@@ -300,20 +302,18 @@ public:
 
     ~ArgsNode() = default;
 
-};
+};*/
 
 class FuncNode final: public Node {
 
 private:
     std::string name_;
-   // std::vector<int> args_;
     std::vector<Node*> args_;
 public:
 
     FuncNode(const yy::location l, std::string name, std::vector<Node*> args) :
         Node(NodeType::FUNCTION, l),name_(std::move(name)), args_(args) {};
 
-    //std::vector<int> GetArgs();
     std::string GetName() const {return name_;};
 
     int Calc() override;
@@ -344,21 +344,36 @@ public:
 class FuncTable final {
 
 private:
-    std::unordered_map<std::string, FuncScopeNode*> table;
+    std::unordered_map<std::string, FuncScopeNode*> global_table;
+
+    std::unordered_map<std::string, FuncScopeNode*> local_table;
+
+    std::unordered_map<std::string, std::string> repeated_table;
 
 public:
 
     FuncTable() = default;
 
-    void AddFunc(const std::string& name, FuncScopeNode* f_Scope);
-    bool Check(const std::string& name, size_t args_num) const;
+    //LocalTable
+    void AddLocalFunc(const std::string& name, FuncScopeNode* f_Scope);
+    //-----------------------
+
+    void AddGlobalFunc(const std::string& name, FuncScopeNode* f_Scope, bool update = false);
+
+    void AddRepeatFunc(const std::string& name, const std::string& global_func, bool update = false);
+
+    bool CheckGlobalFunc(const std::string& name) const { return global_table.count(name);};
     int Execute(const std::string&, const std::vector<int>& args);
+
+    //Ctors and etc...
 
     FuncTable(const FuncTable& rhs) = delete;
     FuncTable& operator = (const FuncTable& rhs) = delete;
 
     FuncTable(FuncTable&& rhs) = delete;
     FuncTable& operator = (FuncTable&& rhs) = delete;
+
+    void DeleteAll() ;
 
     ~FuncTable() = default;
 

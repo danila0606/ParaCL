@@ -390,15 +390,18 @@ namespace yy {
       // math_op
       // scope
       // inside_scope
+      // scope_assignment
       // func_scope
       // f_inside_scope
       // return
+      // function
       char dummy1[sizeof (Node*)];
 
       // VALUE
       char dummy2[sizeof (int)];
 
       // VARIABLE
+      // GLOBAL_FUNC
       char dummy3[sizeof (std::string)];
 
       // PARAMS
@@ -536,26 +539,29 @@ namespace yy {
         S_32_ = 32,                              // '*'
         S_33_ = 33,                              // '/'
         S_YYACCEPT = 34,                         // $accept
-        S_exprLvl1 = 35,                         // exprLvl1
-        S_exprLvl2 = 36,                         // exprLvl2
-        S_exprLvl3 = 37,                         // exprLvl3
-        S_assignment = 38,                       // assignment
-        S_stream = 39,                           // stream
-        S_condition = 40,                        // condition
-        S_math_op = 41,                          // math_op
-        S_scope = 42,                            // scope
-        S_inside_scope = 43,                     // inside_scope
-        S_ARGS = 44,                             // ARGS
-        S_ARGS_C = 45,                           // ARGS_C
-        S_PARAMS = 46,                           // PARAMS
-        S_PARAMS_C = 47,                         // PARAMS_C
-        S_func_scope = 48,                       // func_scope
-        S_f_inside_scope = 49,                   // f_inside_scope
-        S_return = 50,                           // return
-        S_begin_scope = 51,                      // begin_scope
-        S_end_scope = 52,                        // end_scope
-        S_f_begin_scope = 53,                    // f_begin_scope
-        S_func = 54                              // func
+        S_GLOBAL_FUNC = 35,                      // GLOBAL_FUNC
+        S_exprLvl1 = 36,                         // exprLvl1
+        S_exprLvl2 = 37,                         // exprLvl2
+        S_exprLvl3 = 38,                         // exprLvl3
+        S_assignment = 39,                       // assignment
+        S_stream = 40,                           // stream
+        S_condition = 41,                        // condition
+        S_math_op = 42,                          // math_op
+        S_scope = 43,                            // scope
+        S_inside_scope = 44,                     // inside_scope
+        S_scope_assignment = 45,                 // scope_assignment
+        S_ARGS = 46,                             // ARGS
+        S_ARGS_C = 47,                           // ARGS_C
+        S_PARAMS = 48,                           // PARAMS
+        S_PARAMS_C = 49,                         // PARAMS_C
+        S_func_scope = 50,                       // func_scope
+        S_f_inside_scope = 51,                   // f_inside_scope
+        S_return = 52,                           // return
+        S_function = 53,                         // function
+        S_begin_scope = 54,                      // begin_scope
+        S_end_scope = 55,                        // end_scope
+        S_f_begin_scope = 56,                    // f_begin_scope
+        S_func = 57                              // func
       };
     };
 
@@ -601,9 +607,11 @@ namespace yy {
       case symbol_kind::S_math_op: // math_op
       case symbol_kind::S_scope: // scope
       case symbol_kind::S_inside_scope: // inside_scope
+      case symbol_kind::S_scope_assignment: // scope_assignment
       case symbol_kind::S_func_scope: // func_scope
       case symbol_kind::S_f_inside_scope: // f_inside_scope
       case symbol_kind::S_return: // return
+      case symbol_kind::S_function: // function
         value.move< Node* > (std::move (that.value));
         break;
 
@@ -612,6 +620,7 @@ namespace yy {
         break;
 
       case symbol_kind::S_VARIABLE: // VARIABLE
+      case symbol_kind::S_GLOBAL_FUNC: // GLOBAL_FUNC
         value.move< std::string > (std::move (that.value));
         break;
 
@@ -744,9 +753,11 @@ switch (yykind)
       case symbol_kind::S_math_op: // math_op
       case symbol_kind::S_scope: // scope
       case symbol_kind::S_inside_scope: // inside_scope
+      case symbol_kind::S_scope_assignment: // scope_assignment
       case symbol_kind::S_func_scope: // func_scope
       case symbol_kind::S_f_inside_scope: // f_inside_scope
       case symbol_kind::S_return: // return
+      case symbol_kind::S_function: // function
         value.template destroy< Node* > ();
         break;
 
@@ -755,6 +766,7 @@ switch (yykind)
         break;
 
       case symbol_kind::S_VARIABLE: // VARIABLE
+      case symbol_kind::S_GLOBAL_FUNC: // GLOBAL_FUNC
         value.template destroy< std::string > ();
         break;
 
@@ -1712,8 +1724,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 102,     ///< Last index in yytable_.
-      yynnts_ = 21,  ///< Number of nonterminal symbols.
+      yylast_ = 113,     ///< Last index in yytable_.
+      yynnts_ = 24,  ///< Number of nonterminal symbols.
       yyfinal_ = 2 ///< Termination state number.
     };
 
@@ -1725,7 +1737,7 @@ switch (yykind)
 
 
 } // yy
-#line 1729 "numgrammar.tab.hh"
+#line 1741 "numgrammar.tab.hh"
 
 
 
