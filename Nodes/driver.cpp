@@ -3,6 +3,7 @@
 
 BraceNode* CurScope = nullptr;
 FuncTable func_table;
+extern BraceNode* OldScope;
 
 yy::Driver::Driver (std::ifstream& in, std::ostream& out):
         lexer_ (new MyLexer), out_(out)
@@ -100,6 +101,9 @@ void yy::Driver::EmergencyExit(const yy::parser::location_type& location, Errors
 yy::Driver::~Driver() {
 
     delete lexer_;
+    lexer_ = nullptr;
     delete CurScope;
+    CurScope = nullptr;
+    OldScope = nullptr;
     //func_table.DeleteAll();
 }

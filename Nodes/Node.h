@@ -65,8 +65,6 @@ public:
 
 };
 
-class FuncScopeNode;
-
 class BraceNode : public Node {
 
 protected:
@@ -76,7 +74,7 @@ protected:
 
     std::vector<Node*> expressions_ = {};
 
-    std::vector<int> returned_;
+    Node* returned_ = nullptr;
 
     BraceNode* ThisFunc_ = nullptr;
 
@@ -91,8 +89,8 @@ public:
     virtual void AddFuncVariable(const std::string& name) = 0;
     virtual bool GetFuncVariable(const std::string& name) const = 0;
 
-    void AddReturnedValue(int ans);
-    bool IsReturned() const {return !returned_.empty();};
+    void AddReturnedValue(Node* returnNode);
+    bool IsReturned() const {return returned_ != nullptr;};
 
     std::unordered_map<std::string, int> GetValuess() const;
     void UpdateValuess(const std::unordered_map<std::string, int>& table);

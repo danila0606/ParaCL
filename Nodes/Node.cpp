@@ -42,8 +42,8 @@ int BraceNode::Calc() {
 
             ans = exp->Calc();
 
-            if (!returned_.empty())
-                return returned_[0];
+            if (returned_ != nullptr)
+                return returned_->Calc();
 
             ++i;
         }
@@ -56,9 +56,8 @@ int BraceNode::Calc() {
             ans = exp->Calc();
 
             if (ThisFunc_) {
-                if (!ThisFunc_->returned_.empty()) {
+                if (!ThisFunc_->IsReturned())
                     return 322;
-                }
             }
 
             ++i;
@@ -73,22 +72,22 @@ int BraceNode::Calc() {
         return ans;*/
 }
 
-void BraceNode::AddReturnedValue(int ans) {
+void BraceNode::AddReturnedValue(Node* returnNode) {
+
+    if (WhoAmI() != NodeType::FUNCSCOPE)
+        throw std::invalid_argument("You can only use return in functions!");
 
     if (GetType() == NodeType::FUNCSCOPE) {
-        returned_.push_back(ans);
+        returned_ = returnNode;
     }
     else if (GetType() == NodeType::SCOPE) {
-        if (!GetParent()) {
-
-            GetParent()->AddReturnedValue(ans);
-        }
+        if (!GetParent())
+            GetParent()->AddReturnedValue(returnNode);
         else
             assert(0);
     }
     else
         assert(0);
-
 }
 
 std::unordered_map<std::string, int> BraceNode::GetValuess() const {
@@ -450,19 +449,15 @@ int FuncNode::Calc() {
     return func_table.Execute(name_, arguments);
 }
 
-
-
 //_______________________________________________________________
 
 //______________________ReturnNode_________________________________
 
 int ReturnNode::Calc() {
 
-    ReturnTo_->AddReturnedValue(arg_->Calc());
+    ReturnTo_->AddReturnedValue(arg_);
     return 228;
 }
-
-
 
 //_______________________________________________________________
 
@@ -527,22 +522,6 @@ void FuncTable::AddRepeatFunc(const std::string& name, const std::string& global
     repeated_table[name] = global_func;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 int FuncTable::Execute(const std::string& name, const std::vector<int>& args) {
 
     OldScope = CurScope;
@@ -593,6 +572,5 @@ void FuncTable::DeleteAll() {
     for (auto& elem : local_table)
         delete elem.second;
 }
-
 
 //_______________________________________________________________
