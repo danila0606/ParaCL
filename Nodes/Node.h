@@ -22,6 +22,7 @@ enum class NodeType {
     SUB,
     MUL,
     DIV,
+    REM,
 
     ASSIGN,
 
@@ -236,17 +237,20 @@ public:
 class ConditionNode final: public Node {
 
 private:
-    Node* condition_;
+    std::vector<Node*> conditions_;
     ScopeNode* scope_;
+    ScopeNode* else_scope_;
 
 public:
 
-    ConditionNode(Node* condition, ScopeNode* scope, NodeType type, const yy::location& l) :
-    Node(type, l), condition_(condition), scope_(scope) {};
+    ConditionNode(std::vector<Node*> conditions, ScopeNode* scope,
+                  NodeType type, const yy::location& l, ScopeNode* else_node = nullptr) :
+                  Node(type, l), conditions_(std::move(conditions)), scope_(scope), else_scope_(else_node) {};
 
     int Calc() override;
+    bool CheckCondition();
 
-    ~ConditionNode() noexcept {delete condition_; delete scope_; };
+    ~ConditionNode() noexcept {for (auto& c: conditions_) delete c; delete scope_; };
 };
 
 class PrintNode final : public Node {

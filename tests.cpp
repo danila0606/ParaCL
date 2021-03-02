@@ -86,48 +86,4 @@ TEST(SCOPE_FUNC, 1) {
 
     EXPECT_EQ(MyTest("tests/scope_test1.txt"),  "17");
 
-}
-
-
-
-/*
-
-PAR :
-VARIABLE {  int x;
-if (!CurScope->GetValue ($1, x))
-driver->EmergencyExit(@1, yy::Errors::non_existent_variable);
-
-// NA MOMENT KOMPILYASII ONI EHSHE PO NULYAM!!!!!!!!
-
-if (CurScope->GetParent() == nullptr)
-std::cout<<"OMG";
-
-$$ = x; std::cout<<$1<<x<<" "<<$$<<std::endl; }
-|    VALUE {    $$ = $1;}
-;
-*/
-
-
-
-/*
-VARIABLE ASSIGN FUNCTION LB ARGS RB func_scope { FuncScopeNode* f_ptr = static_cast<FuncScopeNode*> ($7);
-f_ptr->SetArgs($5);
-CurScope->AddFuncVariable($1);
-//CurScope->AddValue($1, $5.size());
-func_table.AddFunc($1, f_ptr);
-}
-|    VARIABLE ASSIGN FUNCTION LB ARGS RB COLON VARIABLE func_scope
-{ FuncScopeNode* f_ptr = static_cast<FuncScopeNode*> ($9);
-
-f_ptr->SetArgs($5);
-CurScope->AddFuncVariable($1);
-
-if (func_table.CheckUnknownFunc($8))
-func_table.DeleteUnknownFunc($8);
-
-if (func_table.IsUnknown())
-driver->EmergencyExit(@3, yy::Errors::non_existent_variable);
-
-func_table.AddFunc($1, f_ptr);
-func_table.AddFunc($8, f_ptr);
 }*/

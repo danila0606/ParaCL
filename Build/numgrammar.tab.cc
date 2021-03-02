@@ -195,7 +195,13 @@ namespace yy {
       case symbol_kind::S_f_inside_scope: // f_inside_scope
       case symbol_kind::S_return: // return
       case symbol_kind::S_function: // function
+      case symbol_kind::S_act: // act
         value.copy< Node* > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_ACTION: // ACTION
+      case symbol_kind::S_els: // els
+        value.copy< ScopeNode* > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_VALUE: // VALUE
@@ -209,6 +215,7 @@ namespace yy {
 
       case symbol_kind::S_PARAMS: // PARAMS
       case symbol_kind::S_PARAMS_C: // PARAMS_C
+      case symbol_kind::S_CONS: // CONS
         value.copy< std::vector<Node*> > (YY_MOVE (that.value));
         break;
 
@@ -260,7 +267,13 @@ namespace yy {
       case symbol_kind::S_f_inside_scope: // f_inside_scope
       case symbol_kind::S_return: // return
       case symbol_kind::S_function: // function
+      case symbol_kind::S_act: // act
         value.move< Node* > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_ACTION: // ACTION
+      case symbol_kind::S_els: // els
+        value.move< ScopeNode* > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_VALUE: // VALUE
@@ -274,6 +287,7 @@ namespace yy {
 
       case symbol_kind::S_PARAMS: // PARAMS
       case symbol_kind::S_PARAMS_C: // PARAMS_C
+      case symbol_kind::S_CONS: // CONS
         value.move< std::vector<Node*> > (YY_MOVE (s.value));
         break;
 
@@ -393,7 +407,13 @@ namespace yy {
       case symbol_kind::S_f_inside_scope: // f_inside_scope
       case symbol_kind::S_return: // return
       case symbol_kind::S_function: // function
+      case symbol_kind::S_act: // act
         value.YY_MOVE_OR_COPY< Node* > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_ACTION: // ACTION
+      case symbol_kind::S_els: // els
+        value.YY_MOVE_OR_COPY< ScopeNode* > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_VALUE: // VALUE
@@ -407,6 +427,7 @@ namespace yy {
 
       case symbol_kind::S_PARAMS: // PARAMS
       case symbol_kind::S_PARAMS_C: // PARAMS_C
+      case symbol_kind::S_CONS: // CONS
         value.YY_MOVE_OR_COPY< std::vector<Node*> > (YY_MOVE (that.value));
         break;
 
@@ -444,7 +465,13 @@ namespace yy {
       case symbol_kind::S_f_inside_scope: // f_inside_scope
       case symbol_kind::S_return: // return
       case symbol_kind::S_function: // function
+      case symbol_kind::S_act: // act
         value.move< Node* > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_ACTION: // ACTION
+      case symbol_kind::S_els: // els
+        value.move< ScopeNode* > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_VALUE: // VALUE
@@ -458,6 +485,7 @@ namespace yy {
 
       case symbol_kind::S_PARAMS: // PARAMS
       case symbol_kind::S_PARAMS_C: // PARAMS_C
+      case symbol_kind::S_CONS: // CONS
         value.move< std::vector<Node*> > (YY_MOVE (that.value));
         break;
 
@@ -495,7 +523,13 @@ namespace yy {
       case symbol_kind::S_f_inside_scope: // f_inside_scope
       case symbol_kind::S_return: // return
       case symbol_kind::S_function: // function
+      case symbol_kind::S_act: // act
         value.copy< Node* > (that.value);
+        break;
+
+      case symbol_kind::S_ACTION: // ACTION
+      case symbol_kind::S_els: // els
+        value.copy< ScopeNode* > (that.value);
         break;
 
       case symbol_kind::S_VALUE: // VALUE
@@ -509,6 +543,7 @@ namespace yy {
 
       case symbol_kind::S_PARAMS: // PARAMS
       case symbol_kind::S_PARAMS_C: // PARAMS_C
+      case symbol_kind::S_CONS: // CONS
         value.copy< std::vector<Node*> > (that.value);
         break;
 
@@ -545,7 +580,13 @@ namespace yy {
       case symbol_kind::S_f_inside_scope: // f_inside_scope
       case symbol_kind::S_return: // return
       case symbol_kind::S_function: // function
+      case symbol_kind::S_act: // act
         value.move< Node* > (that.value);
+        break;
+
+      case symbol_kind::S_ACTION: // ACTION
+      case symbol_kind::S_els: // els
+        value.move< ScopeNode* > (that.value);
         break;
 
       case symbol_kind::S_VALUE: // VALUE
@@ -559,6 +600,7 @@ namespace yy {
 
       case symbol_kind::S_PARAMS: // PARAMS
       case symbol_kind::S_PARAMS_C: // PARAMS_C
+      case symbol_kind::S_CONS: // CONS
         value.move< std::vector<Node*> > (that.value);
         break;
 
@@ -839,7 +881,13 @@ namespace yy {
       case symbol_kind::S_f_inside_scope: // f_inside_scope
       case symbol_kind::S_return: // return
       case symbol_kind::S_function: // function
+      case symbol_kind::S_act: // act
         yylhs.value.emplace< Node* > ();
+        break;
+
+      case symbol_kind::S_ACTION: // ACTION
+      case symbol_kind::S_els: // els
+        yylhs.value.emplace< ScopeNode* > ();
         break;
 
       case symbol_kind::S_VALUE: // VALUE
@@ -853,6 +901,7 @@ namespace yy {
 
       case symbol_kind::S_PARAMS: // PARAMS
       case symbol_kind::S_PARAMS_C: // PARAMS_C
+      case symbol_kind::S_CONS: // CONS
         yylhs.value.emplace< std::vector<Node*> > ();
         break;
 
@@ -882,94 +931,94 @@ namespace yy {
           switch (yyn)
             {
   case 2: // scope: begin_scope inside_scope end_scope
-#line 104 "numgrammar.y"
+#line 114 "numgrammar.y"
                                                                 { yylhs.value.as < Node* > () = CurScope; CurScope = CurScope->GetParent(); }
-#line 888 "numgrammar.tab.cc"
+#line 937 "numgrammar.tab.cc"
     break;
 
   case 3: // begin_scope: "{"
-#line 108 "numgrammar.y"
+#line 118 "numgrammar.y"
                                                                         {
 											ScopeNode* child = new ScopeNode (yystack_[0].location,CurScope, CurFunc);
 											CurScope = child;
 										}
-#line 897 "numgrammar.tab.cc"
+#line 946 "numgrammar.tab.cc"
     break;
 
   case 4: // inside_scope: inside_scope assignment ";"
-#line 115 "numgrammar.y"
+#line 125 "numgrammar.y"
                                                 { CurScope->PushNode (yystack_[1].value.as < Node* > ()); }
-#line 903 "numgrammar.tab.cc"
+#line 952 "numgrammar.tab.cc"
     break;
 
   case 5: // inside_scope: inside_scope stream ";"
-#line 116 "numgrammar.y"
+#line 126 "numgrammar.y"
                                                     { CurScope->PushNode (yystack_[1].value.as < Node* > ()); }
-#line 909 "numgrammar.tab.cc"
+#line 958 "numgrammar.tab.cc"
     break;
 
   case 6: // inside_scope: inside_scope condition
-#line 117 "numgrammar.y"
+#line 127 "numgrammar.y"
                                                         { CurScope->PushNode (yystack_[0].value.as < Node* > ()); }
-#line 915 "numgrammar.tab.cc"
+#line 964 "numgrammar.tab.cc"
     break;
 
   case 7: // inside_scope: inside_scope func
-#line 118 "numgrammar.y"
+#line 128 "numgrammar.y"
                                         { /* nothing */ }
-#line 921 "numgrammar.tab.cc"
+#line 970 "numgrammar.tab.cc"
     break;
 
   case 8: // inside_scope: inside_scope func ";"
-#line 119 "numgrammar.y"
+#line 129 "numgrammar.y"
                                         { /* nothing */ }
-#line 927 "numgrammar.tab.cc"
+#line 976 "numgrammar.tab.cc"
     break;
 
   case 9: // inside_scope: inside_scope exprLvl1 ";"
-#line 120 "numgrammar.y"
+#line 130 "numgrammar.y"
                                         { CurScope->PushNode(yystack_[1].value.as < Node* > ()); }
-#line 933 "numgrammar.tab.cc"
+#line 982 "numgrammar.tab.cc"
     break;
 
   case 10: // inside_scope: inside_scope return ";"
-#line 121 "numgrammar.y"
-                                      { CurScope->PushNode(yystack_[1].value.as < Node* > ()); }
-#line 939 "numgrammar.tab.cc"
+#line 131 "numgrammar.y"
+                                        { CurScope->PushNode(yystack_[1].value.as < Node* > ()); }
+#line 988 "numgrammar.tab.cc"
     break;
 
   case 11: // inside_scope: inside_scope scope
-#line 122 "numgrammar.y"
-                                       { CurScope->PushNode(yystack_[0].value.as < Node* > ()); }
-#line 945 "numgrammar.tab.cc"
+#line 132 "numgrammar.y"
+                                        { CurScope->PushNode(yystack_[0].value.as < Node* > ()); }
+#line 994 "numgrammar.tab.cc"
     break;
 
   case 12: // inside_scope: inside_scope scope_assignment
-#line 123 "numgrammar.y"
+#line 133 "numgrammar.y"
                                         {  CurScope->PushNode(yystack_[0].value.as < Node* > ());}
-#line 951 "numgrammar.tab.cc"
+#line 1000 "numgrammar.tab.cc"
     break;
 
   case 13: // inside_scope: %empty
-#line 125 "numgrammar.y"
-                                                                                {}
-#line 957 "numgrammar.tab.cc"
+#line 134 "numgrammar.y"
+                                                                                { /* nothing */ }
+#line 1006 "numgrammar.tab.cc"
     break;
 
   case 14: // end_scope: "}"
-#line 129 "numgrammar.y"
+#line 138 "numgrammar.y"
                 { }
-#line 963 "numgrammar.tab.cc"
+#line 1012 "numgrammar.tab.cc"
     break;
 
   case 15: // func_scope: f_begin_scope f_inside_scope end_scope
-#line 135 "numgrammar.y"
+#line 142 "numgrammar.y"
                                                                 { yylhs.value.as < Node* > () = CurScope; CurScope = CurScope->GetParent(); CurFunc = nullptr;}
-#line 969 "numgrammar.tab.cc"
+#line 1018 "numgrammar.tab.cc"
     break;
 
   case 16: // f_begin_scope: "(" ARGS ")" "{"
-#line 139 "numgrammar.y"
+#line 146 "numgrammar.y"
                                                                 {
 
 
@@ -981,11 +1030,11 @@ namespace yy {
 											CurScope = child;
 											CurFunc = static_cast<FuncScopeNode*>(child);
 										}
-#line 985 "numgrammar.tab.cc"
+#line 1034 "numgrammar.tab.cc"
     break;
 
   case 17: // f_begin_scope: "(" ARGS ")" ":" GLOBAL_FUNC "{"
-#line 150 "numgrammar.y"
+#line 157 "numgrammar.y"
                                                 {
 
   											BraceNode* child = new FuncScopeNode (yystack_[5].location, CurScope);
@@ -1001,11 +1050,11 @@ namespace yy {
   											CurScope = child;
   											CurFunc = static_cast<FuncScopeNode*>(child);
   										}
-#line 1005 "numgrammar.tab.cc"
+#line 1054 "numgrammar.tab.cc"
     break;
 
   case 18: // GLOBAL_FUNC: VARIABLE
-#line 168 "numgrammar.y"
+#line 175 "numgrammar.y"
              {
                                                     int x;
           											if (!CurScope->GetValue(yystack_[0].value.as < std::string > (),x) || !CurScope->GetFuncVariable(yystack_[0].value.as < std::string > ())) {
@@ -1017,59 +1066,137 @@ namespace yy {
 
           											yylhs.value.as < std::string > () = yystack_[0].value.as < std::string > ();
     }
-#line 1021 "numgrammar.tab.cc"
+#line 1070 "numgrammar.tab.cc"
     break;
 
   case 19: // f_inside_scope: inside_scope assignment ";"
-#line 182 "numgrammar.y"
+#line 189 "numgrammar.y"
                                                 { CurScope->PushNode (yystack_[1].value.as < Node* > ()); }
-#line 1027 "numgrammar.tab.cc"
+#line 1076 "numgrammar.tab.cc"
     break;
 
   case 20: // f_inside_scope: inside_scope stream ";"
-#line 183 "numgrammar.y"
+#line 190 "numgrammar.y"
                                                     { CurScope->PushNode (yystack_[1].value.as < Node* > ()); }
-#line 1033 "numgrammar.tab.cc"
+#line 1082 "numgrammar.tab.cc"
     break;
 
   case 21: // f_inside_scope: inside_scope condition
-#line 184 "numgrammar.y"
+#line 191 "numgrammar.y"
                                                         { CurScope->PushNode (yystack_[0].value.as < Node* > ()); }
-#line 1039 "numgrammar.tab.cc"
+#line 1088 "numgrammar.tab.cc"
     break;
 
   case 22: // f_inside_scope: inside_scope exprLvl1 ";"
-#line 185 "numgrammar.y"
-                                      { CurScope->PushNode(yystack_[1].value.as < Node* > ()); }
-#line 1045 "numgrammar.tab.cc"
+#line 192 "numgrammar.y"
+                                        { CurScope->PushNode (yystack_[1].value.as < Node* > ()); }
+#line 1094 "numgrammar.tab.cc"
     break;
 
   case 23: // f_inside_scope: inside_scope return ";"
-#line 186 "numgrammar.y"
-                                     { CurScope->PushNode(yystack_[1].value.as < Node* > ()); }
-#line 1051 "numgrammar.tab.cc"
+#line 193 "numgrammar.y"
+                                        { CurScope->PushNode (yystack_[1].value.as < Node* > ()); }
+#line 1100 "numgrammar.tab.cc"
     break;
 
   case 24: // f_inside_scope: %empty
-#line 190 "numgrammar.y"
-                                                                                {}
-#line 1057 "numgrammar.tab.cc"
-    break;
-
-  case 25: // condition: "if" "(" math_op ")" scope
 #line 194 "numgrammar.y"
-                                    { yylhs.value.as < Node* > () = new ConditionNode(yystack_[2].value.as < Node* > (), static_cast<ScopeNode*>(yystack_[0].value.as < Node* > ()), NodeType::IF, yystack_[4].location); }
-#line 1063 "numgrammar.tab.cc"
+                                                                                { /* nothing */            }
+#line 1106 "numgrammar.tab.cc"
     break;
 
-  case 26: // condition: "while" "(" math_op ")" scope
-#line 195 "numgrammar.y"
-                                        { yylhs.value.as < Node* > () = new ConditionNode(yystack_[2].value.as < Node* > (), static_cast<ScopeNode*>(yystack_[0].value.as < Node* > ()), NodeType::WHILE, yystack_[4].location); }
-#line 1069 "numgrammar.tab.cc"
+  case 25: // condition: "if" "(" CONS ")" ACTION els
+#line 199 "numgrammar.y"
+                             { yylhs.value.as < Node* > () = new ConditionNode(yystack_[3].value.as < std::vector<Node*> > (), static_cast<ScopeNode*>(yystack_[1].value.as < ScopeNode* > ()), NodeType::IF, yystack_[5].location, yystack_[0].value.as < ScopeNode* > ());}
+#line 1112 "numgrammar.tab.cc"
     break;
 
-  case 27: // func: VARIABLE "=" "func" func_scope
-#line 201 "numgrammar.y"
+  case 26: // condition: "while" "(" CONS ")" ACTION
+#line 200 "numgrammar.y"
+                             { yylhs.value.as < Node* > () = new ConditionNode(yystack_[2].value.as < std::vector<Node*> > (), static_cast<ScopeNode*>(yystack_[0].value.as < ScopeNode* > ()), NodeType::WHILE, yystack_[4].location) ;}
+#line 1118 "numgrammar.tab.cc"
+    break;
+
+  case 27: // ACTION: scope
+#line 203 "numgrammar.y"
+          { yylhs.value.as < ScopeNode* > () = static_cast<ScopeNode*>(yystack_[0].value.as < Node* > ());                        }
+#line 1124 "numgrammar.tab.cc"
+    break;
+
+  case 28: // ACTION: act
+#line 204 "numgrammar.y"
+          { ScopeNode* child = new ScopeNode (yystack_[0].location,CurScope, CurFunc);
+            child->PushNode(yystack_[0].value.as < Node* > ());
+            yylhs.value.as < ScopeNode* > () = child;  child = nullptr;                            }
+#line 1132 "numgrammar.tab.cc"
+    break;
+
+  case 29: // act: stream ";"
+#line 210 "numgrammar.y"
+                                    { yylhs.value.as < Node* > () = yystack_[1].value.as < Node* > (); }
+#line 1138 "numgrammar.tab.cc"
+    break;
+
+  case 30: // act: condition
+#line 211 "numgrammar.y"
+                                            { yylhs.value.as < Node* > () = yystack_[0].value.as < Node* > (); }
+#line 1144 "numgrammar.tab.cc"
+    break;
+
+  case 31: // act: exprLvl1 ";"
+#line 212 "numgrammar.y"
+                                { yylhs.value.as < Node* > () = yystack_[1].value.as < Node* > (); }
+#line 1150 "numgrammar.tab.cc"
+    break;
+
+  case 32: // act: return ";"
+#line 213 "numgrammar.y"
+                                { yylhs.value.as < Node* > () = yystack_[1].value.as < Node* > (); }
+#line 1156 "numgrammar.tab.cc"
+    break;
+
+  case 33: // act: scope_assignment
+#line 214 "numgrammar.y"
+                                { yylhs.value.as < Node* > () = yystack_[0].value.as < Node* > (); }
+#line 1162 "numgrammar.tab.cc"
+    break;
+
+  case 34: // act: assignment ";"
+#line 215 "numgrammar.y"
+                                        { yylhs.value.as < Node* > () = yystack_[1].value.as < Node* > (); }
+#line 1168 "numgrammar.tab.cc"
+    break;
+
+  case 35: // els: "else" ACTION
+#line 219 "numgrammar.y"
+                   { yylhs.value.as < ScopeNode* > () = yystack_[0].value.as < ScopeNode* > ();     }
+#line 1174 "numgrammar.tab.cc"
+    break;
+
+  case 36: // els: %empty
+#line 220 "numgrammar.y"
+                   { yylhs.value.as < ScopeNode* > () = nullptr;}
+#line 1180 "numgrammar.tab.cc"
+    break;
+
+  case 37: // CONS: math_op
+#line 224 "numgrammar.y"
+                        { yylhs.value.as < std::vector<Node*> > ().push_back(yystack_[0].value.as < Node* > ());       }
+#line 1186 "numgrammar.tab.cc"
+    break;
+
+  case 38: // CONS: math_op "&&" CONS
+#line 225 "numgrammar.y"
+                        { yylhs.value.as < std::vector<Node*> > ().push_back(yystack_[2].value.as < Node* > ());
+
+                          for (const auto& elem : yystack_[0].value.as < std::vector<Node*> > ())
+                              yylhs.value.as < std::vector<Node*> > ().push_back(elem);
+                                                  }
+#line 1196 "numgrammar.tab.cc"
+    break;
+
+  case 39: // func: VARIABLE "=" "func" func_scope
+#line 234 "numgrammar.y"
                                         { FuncScopeNode* f_ptr = static_cast<FuncScopeNode*> (yystack_[0].value.as < Node* > ());
                                           CurScope->AddFuncVariable(yystack_[3].value.as < std::string > ());
 
@@ -1080,216 +1207,215 @@ namespace yy {
                                           else
                                               func_table.AddLocalFunc(yystack_[3].value.as < std::string > (), f_ptr);
     }
-#line 1084 "numgrammar.tab.cc"
+#line 1211 "numgrammar.tab.cc"
     break;
 
-  case 28: // ARGS: ARGS_C
-#line 216 "numgrammar.y"
+  case 40: // ARGS: ARGS_C
+#line 248 "numgrammar.y"
            {     yylhs.value.as < std::vector<std::string> > () = yystack_[0].value.as < std::vector<std::string> > ();    }
-#line 1090 "numgrammar.tab.cc"
+#line 1217 "numgrammar.tab.cc"
     break;
 
-  case 29: // ARGS: %empty
-#line 217 "numgrammar.y"
+  case 41: // ARGS: %empty
+#line 249 "numgrammar.y"
            {/*no arguments */}
-#line 1096 "numgrammar.tab.cc"
+#line 1223 "numgrammar.tab.cc"
     break;
 
-  case 30: // ARGS_C: VARIABLE "," ARGS_C
-#line 223 "numgrammar.y"
+  case 42: // ARGS_C: VARIABLE "," ARGS_C
+#line 255 "numgrammar.y"
                               { yylhs.value.as < std::vector<std::string> > ().push_back(yystack_[2].value.as < std::string > ());
 
                                 for (const auto& elem : yystack_[0].value.as < std::vector<std::string> > ())
-                                   yylhs.value.as < std::vector<std::string> > ().push_back(elem);                     }
-#line 1105 "numgrammar.tab.cc"
+                                   yylhs.value.as < std::vector<std::string> > ().push_back(elem);         }
+#line 1232 "numgrammar.tab.cc"
     break;
 
-  case 31: // ARGS_C: VARIABLE
-#line 227 "numgrammar.y"
-                              { yylhs.value.as < std::vector<std::string> > ().push_back(yystack_[0].value.as < std::string > ());                    }
-#line 1111 "numgrammar.tab.cc"
+  case 43: // ARGS_C: VARIABLE
+#line 260 "numgrammar.y"
+                              { yylhs.value.as < std::vector<std::string> > ().push_back(yystack_[0].value.as < std::string > ());              }
+#line 1238 "numgrammar.tab.cc"
     break;
 
-  case 32: // PARAMS: PARAMS_C
-#line 233 "numgrammar.y"
+  case 44: // PARAMS: PARAMS_C
+#line 266 "numgrammar.y"
              {     yylhs.value.as < std::vector<Node*> > () = yystack_[0].value.as < std::vector<Node*> > ();    }
-#line 1117 "numgrammar.tab.cc"
+#line 1244 "numgrammar.tab.cc"
     break;
 
-  case 33: // PARAMS: %empty
-#line 234 "numgrammar.y"
-           {/*no arguments */}
-#line 1123 "numgrammar.tab.cc"
+  case 45: // PARAMS: %empty
+#line 267 "numgrammar.y"
+             {/*no arguments */}
+#line 1250 "numgrammar.tab.cc"
     break;
 
-  case 34: // PARAMS_C: exprLvl1 "," PARAMS_C
-#line 240 "numgrammar.y"
+  case 46: // PARAMS_C: exprLvl1 "," PARAMS_C
+#line 271 "numgrammar.y"
                                 {
                                 yylhs.value.as < std::vector<Node*> > ().push_back(yystack_[2].value.as < Node* > ());
 
                                 for (const auto& elem : yystack_[0].value.as < std::vector<Node*> > ())
                                     yylhs.value.as < std::vector<Node*> > ().push_back(elem);
 
-                                                     }
-#line 1135 "numgrammar.tab.cc"
+                                                            }
+#line 1262 "numgrammar.tab.cc"
     break;
 
-  case 35: // PARAMS_C: exprLvl1
-#line 247 "numgrammar.y"
-                                {     yylhs.value.as < std::vector<Node*> > ().push_back(yystack_[0].value.as < Node* > ());                     }
-#line 1141 "numgrammar.tab.cc"
+  case 47: // PARAMS_C: exprLvl1
+#line 278 "numgrammar.y"
+                                {     yylhs.value.as < std::vector<Node*> > ().push_back(yystack_[0].value.as < Node* > ());     }
+#line 1268 "numgrammar.tab.cc"
     break;
 
-  case 36: // return: "return" exprLvl1
-#line 252 "numgrammar.y"
+  case 48: // return: "return" exprLvl1
+#line 282 "numgrammar.y"
                     {   if (CurFunc == nullptr)
                             assert(0);
 
                         yylhs.value.as < Node* > () = new ReturnNode(yystack_[1].location, yystack_[0].value.as < Node* > (), CurFunc);
                     }
-#line 1151 "numgrammar.tab.cc"
+#line 1278 "numgrammar.tab.cc"
     break;
 
-  case 37: // math_op: exprLvl1 ">" exprLvl1
-#line 260 "numgrammar.y"
+  case 49: // math_op: exprLvl1 ">" exprLvl1
+#line 290 "numgrammar.y"
                                                         { yylhs.value.as < Node* > () = new MathOpNode (yystack_[2].value.as < Node* > (), yystack_[0].value.as < Node* > (), NodeType::GREATER, yystack_[1].location); }
-#line 1157 "numgrammar.tab.cc"
+#line 1284 "numgrammar.tab.cc"
     break;
 
-  case 38: // math_op: exprLvl1 ">=" exprLvl1
-#line 261 "numgrammar.y"
+  case 50: // math_op: exprLvl1 ">=" exprLvl1
+#line 291 "numgrammar.y"
                                                 { yylhs.value.as < Node* > () = new MathOpNode (yystack_[2].value.as < Node* > (), yystack_[0].value.as < Node* > (), NodeType::GREATER_OR_EQ, yystack_[1].location); }
-#line 1163 "numgrammar.tab.cc"
+#line 1290 "numgrammar.tab.cc"
     break;
 
-  case 39: // math_op: exprLvl1 "<" exprLvl1
-#line 262 "numgrammar.y"
+  case 51: // math_op: exprLvl1 "<" exprLvl1
+#line 292 "numgrammar.y"
                                                         { yylhs.value.as < Node* > () = new MathOpNode (yystack_[2].value.as < Node* > (), yystack_[0].value.as < Node* > (), NodeType::LESS, yystack_[1].location); }
-#line 1169 "numgrammar.tab.cc"
+#line 1296 "numgrammar.tab.cc"
     break;
 
-  case 40: // math_op: exprLvl1 "<=" exprLvl1
-#line 263 "numgrammar.y"
+  case 52: // math_op: exprLvl1 "<=" exprLvl1
+#line 293 "numgrammar.y"
                                                 { yylhs.value.as < Node* > () = new MathOpNode (yystack_[2].value.as < Node* > (), yystack_[0].value.as < Node* > (), NodeType::LESS_OR_EQ, yystack_[1].location); }
-#line 1175 "numgrammar.tab.cc"
+#line 1302 "numgrammar.tab.cc"
     break;
 
-  case 41: // math_op: exprLvl1 "==" exprLvl1
-#line 264 "numgrammar.y"
+  case 53: // math_op: exprLvl1 "==" exprLvl1
+#line 294 "numgrammar.y"
                                                         { yylhs.value.as < Node* > () = new MathOpNode (yystack_[2].value.as < Node* > (), yystack_[0].value.as < Node* > (), NodeType::EQUAL, yystack_[1].location); }
-#line 1181 "numgrammar.tab.cc"
+#line 1308 "numgrammar.tab.cc"
     break;
 
-  case 42: // math_op: exprLvl1 "!=" exprLvl1
-#line 265 "numgrammar.y"
+  case 54: // math_op: exprLvl1 "!=" exprLvl1
+#line 295 "numgrammar.y"
                                                         { yylhs.value.as < Node* > () = new MathOpNode (yystack_[2].value.as < Node* > (), yystack_[0].value.as < Node* > (), NodeType::NOT_EQUAL, yystack_[1].location); }
-#line 1187 "numgrammar.tab.cc"
+#line 1314 "numgrammar.tab.cc"
     break;
 
-  case 43: // function: VARIABLE "(" PARAMS ")"
-#line 270 "numgrammar.y"
+  case 55: // function: VARIABLE "(" PARAMS ")"
+#line 300 "numgrammar.y"
                           {
         if (!CurScope->GetFuncVariable (yystack_[3].value.as < std::string > ())) {
-                        if (!func_table.CheckGlobalFunc(yystack_[3].value.as < std::string > ())) {
-
-                                driver->EmergencyExit(yystack_[3].location, yy::Errors::non_existent_variable);
-                            }
-                    }
-
+            if (!func_table.CheckGlobalFunc(yystack_[3].value.as < std::string > ()))
+                driver->EmergencyExit(yystack_[3].location, yy::Errors::non_existent_variable);
+        }
         yylhs.value.as < Node* > () = new FuncNode(yystack_[3].location,yystack_[3].value.as < std::string > (), yystack_[1].value.as < std::vector<Node*> > ());
     }
-#line 1202 "numgrammar.tab.cc"
+#line 1326 "numgrammar.tab.cc"
     break;
 
-  case 44: // assignment: VARIABLE "=" exprLvl1
-#line 282 "numgrammar.y"
+  case 56: // assignment: VARIABLE "=" exprLvl1
+#line 309 "numgrammar.y"
                                         {
-\
 									CurScope->AddValue(yystack_[2].value.as < std::string > (), 0);
-
 								  	yylhs.value.as < Node* > () = new AssignNode(new VariableNode(yystack_[2].value.as < std::string > (), yystack_[2].location), yystack_[0].value.as < Node* > (), yystack_[1].location);
-
 								}
-#line 1214 "numgrammar.tab.cc"
+#line 1335 "numgrammar.tab.cc"
     break;
 
-  case 45: // scope_assignment: VARIABLE "=" scope
-#line 295 "numgrammar.y"
+  case 57: // scope_assignment: VARIABLE "=" scope
+#line 316 "numgrammar.y"
                           {
         CurScope->AddValue(yystack_[2].value.as < std::string > (), 0);
 
         yylhs.value.as < Node* > () = new AssignNode(new VariableNode(yystack_[2].value.as < std::string > (), yystack_[2].location), yystack_[0].value.as < Node* > (), yystack_[1].location);
-
     }
-#line 1225 "numgrammar.tab.cc"
+#line 1345 "numgrammar.tab.cc"
     break;
 
-  case 46: // stream: "print" exprLvl1
-#line 304 "numgrammar.y"
+  case 58: // stream: "print" exprLvl1
+#line 324 "numgrammar.y"
                                                 { yylhs.value.as < Node* > () = new  PrintNode(yystack_[0].value.as < Node* > (), yystack_[1].location, driver->GetOstream()); }
-#line 1231 "numgrammar.tab.cc"
+#line 1351 "numgrammar.tab.cc"
     break;
 
-  case 47: // stream: VARIABLE "=" "?"
-#line 305 "numgrammar.y"
+  case 59: // stream: VARIABLE "=" "?"
+#line 325 "numgrammar.y"
                                         {
                                     CurScope->AddValue(yystack_[2].value.as < std::string > (), 0.0);
 
 								  	yylhs.value.as < Node* > () = new ScanNode(new VariableNode(yystack_[2].value.as < std::string > (), yystack_[2].location), yystack_[1].location);
 								}
-#line 1241 "numgrammar.tab.cc"
+#line 1361 "numgrammar.tab.cc"
     break;
 
-  case 48: // exprLvl1: exprLvl2 "+" exprLvl1
-#line 313 "numgrammar.y"
+  case 60: // exprLvl1: exprLvl2 "+" exprLvl1
+#line 333 "numgrammar.y"
                                 { yylhs.value.as < Node* > () = new MathOpNode(yystack_[2].value.as < Node* > (), yystack_[0].value.as < Node* > (), NodeType::ADD, yystack_[1].location); }
-#line 1247 "numgrammar.tab.cc"
+#line 1367 "numgrammar.tab.cc"
     break;
 
-  case 49: // exprLvl1: exprLvl2 "-" exprLvl1
-#line 314 "numgrammar.y"
+  case 61: // exprLvl1: exprLvl2 "-" exprLvl1
+#line 334 "numgrammar.y"
                                 { yylhs.value.as < Node* > () = new MathOpNode(yystack_[2].value.as < Node* > (), yystack_[0].value.as < Node* > (), NodeType::SUB, yystack_[1].location); }
-#line 1253 "numgrammar.tab.cc"
+#line 1373 "numgrammar.tab.cc"
     break;
 
-  case 50: // exprLvl1: exprLvl2
-#line 315 "numgrammar.y"
+  case 62: // exprLvl1: exprLvl2
+#line 335 "numgrammar.y"
                                                 { yylhs.value.as < Node* > () = yystack_[0].value.as < Node* > (); }
-#line 1259 "numgrammar.tab.cc"
+#line 1379 "numgrammar.tab.cc"
     break;
 
-  case 51: // exprLvl2: exprLvl3 "*" exprLvl2
-#line 319 "numgrammar.y"
+  case 63: // exprLvl2: exprLvl3 "*" exprLvl2
+#line 339 "numgrammar.y"
                                 { yylhs.value.as < Node* > () = new MathOpNode(yystack_[2].value.as < Node* > (), yystack_[0].value.as < Node* > (), NodeType::MUL, yystack_[1].location); }
-#line 1265 "numgrammar.tab.cc"
+#line 1385 "numgrammar.tab.cc"
     break;
 
-  case 52: // exprLvl2: exprLvl3 "/" exprLvl2
-#line 320 "numgrammar.y"
+  case 64: // exprLvl2: exprLvl3 "/" exprLvl2
+#line 340 "numgrammar.y"
                                 { yylhs.value.as < Node* > () = new MathOpNode(yystack_[2].value.as < Node* > (), yystack_[0].value.as < Node* > (), NodeType::DIV, yystack_[1].location); }
-#line 1271 "numgrammar.tab.cc"
+#line 1391 "numgrammar.tab.cc"
     break;
 
-  case 53: // exprLvl2: exprLvl3
-#line 321 "numgrammar.y"
+  case 65: // exprLvl2: exprLvl3 "%" exprLvl2
+#line 341 "numgrammar.y"
+                                { yylhs.value.as < Node* > () = new MathOpNode(yystack_[2].value.as < Node* > (), yystack_[0].value.as < Node* > (), NodeType::REM, yystack_[1].location); }
+#line 1397 "numgrammar.tab.cc"
+    break;
+
+  case 66: // exprLvl2: exprLvl3
+#line 342 "numgrammar.y"
                                                 { yylhs.value.as < Node* > () = yystack_[0].value.as < Node* > (); }
-#line 1277 "numgrammar.tab.cc"
+#line 1403 "numgrammar.tab.cc"
     break;
 
-  case 54: // exprLvl3: "(" exprLvl1 ")"
-#line 325 "numgrammar.y"
+  case 67: // exprLvl3: "(" exprLvl1 ")"
+#line 346 "numgrammar.y"
                         { yylhs.value.as < Node* > () = yystack_[1].value.as < Node* > (); }
-#line 1283 "numgrammar.tab.cc"
+#line 1409 "numgrammar.tab.cc"
     break;
 
-  case 55: // exprLvl3: VALUE
-#line 326 "numgrammar.y"
+  case 68: // exprLvl3: VALUE
+#line 347 "numgrammar.y"
                                 { yylhs.value.as < Node* > () = new ValueNode(yystack_[0].value.as < int > (), yystack_[0].location); }
-#line 1289 "numgrammar.tab.cc"
+#line 1415 "numgrammar.tab.cc"
     break;
 
-  case 56: // exprLvl3: VARIABLE
-#line 327 "numgrammar.y"
+  case 69: // exprLvl3: VARIABLE
+#line 348 "numgrammar.y"
                                 {
 											int x;
 											if (!CurScope->GetValue (yystack_[0].value.as < std::string > (), x)) {
@@ -1297,20 +1423,19 @@ namespace yy {
                                             }
 											yylhs.value.as < Node* > () = new VariableNode(yystack_[0].value.as < std::string > (), yystack_[0].location);
 					}
-#line 1301 "numgrammar.tab.cc"
+#line 1427 "numgrammar.tab.cc"
     break;
 
-  case 57: // exprLvl3: function
-#line 335 "numgrammar.y"
+  case 70: // exprLvl3: function
+#line 356 "numgrammar.y"
               {
             yylhs.value.as < Node* > () = yystack_[0].value.as < Node* > ();
-
           }
-#line 1310 "numgrammar.tab.cc"
+#line 1435 "numgrammar.tab.cc"
     break;
 
 
-#line 1314 "numgrammar.tab.cc"
+#line 1439 "numgrammar.tab.cc"
 
             default:
               break;
@@ -1492,14 +1617,15 @@ namespace yy {
   {
     static const char *const yy_sname[] =
     {
-    "end of file", "error", "invalid token", "+", "-", "*", "/", "=", "(",
-  ")", "{", "}", ">", ">=", "<", "<=", "==", "!=", "if", "while", "print",
-  "?", ";", "func", "return", ":", ",", "ERROR", "VALUE", "VARIABLE",
-  "'+'", "'-'", "'*'", "'/'", "$accept", "GLOBAL_FUNC", "exprLvl1",
-  "exprLvl2", "exprLvl3", "assignment", "stream", "condition", "math_op",
-  "scope", "inside_scope", "scope_assignment", "ARGS", "ARGS_C", "PARAMS",
-  "PARAMS_C", "func_scope", "f_inside_scope", "return", "function",
-  "begin_scope", "end_scope", "f_begin_scope", "func", YY_NULLPTR
+    "end of file", "error", "invalid token", "+", "-", "*", "/", "=", "%",
+  "(", ")", "{", "}", ">", ">=", "<", "<=", "==", "!=", "&&", "if", "else",
+  "while", "print", "?", ";", "func", "return", ":", ",", "ERROR", "VALUE",
+  "VARIABLE", "'+'", "'-'", "'*'", "'/'", "$accept", "GLOBAL_FUNC",
+  "exprLvl1", "exprLvl2", "exprLvl3", "assignment", "stream", "condition",
+  "math_op", "scope", "inside_scope", "scope_assignment", "ARGS", "ARGS_C",
+  "PARAMS", "PARAMS_C", "CONS", "func_scope", "f_inside_scope", "return",
+  "function", "act", "ACTION", "els", "begin_scope", "end_scope",
+  "f_begin_scope", "func", YY_NULLPTR
     };
     return yy_sname[yysymbol];
   }
@@ -1549,117 +1675,133 @@ namespace yy {
 
 
 
-  const signed char parser::yypact_ninf_ = -28;
+  const signed char parser::yypact_ninf_ = -58;
 
   const signed char parser::yytable_ninf_ = -25;
 
-  const signed char
+  const short
   parser::yypact_[] =
   {
-     -28,    25,   -28,    23,   -28,     6,     9,    23,    23,   -28,
-       5,    -2,    12,    36,     2,    14,   -28,   -28,   -28,    24,
-     -28,   -28,    28,    20,    38,    23,    23,   -28,   -28,    11,
-      23,   -28,    23,    23,    23,    23,   -28,   -28,   -28,    53,
-     -28,   -28,    -6,    56,    60,   -28,    54,   -28,   -28,    44,
-      69,   -28,   -28,   -28,   -28,   -28,   -28,   -28,    23,    23,
-      23,    23,    23,    23,    65,    65,    51,   -28,    72,    23,
-     -28,   -28,   -28,   -28,   -28,   -28,   -28,   -28,   -28,    61,
-      79,   -28,    66,    78,   -28,    51,    -7,    70,    71,    74,
-      80,    75,   -28,   -28,   -28,    73,    87,    88,    89,    90,
-     -28,    93,   -28
+     -58,    14,   -58,    44,   -58,    10,    29,    44,    44,   -58,
+      15,   -17,    23,    12,    -4,    17,   -58,   -58,   -58,    31,
+     -58,   -58,    33,    50,    56,    44,    44,   -58,   -58,   106,
+      44,   -58,    44,    44,    44,    44,    44,   -58,   -58,   -58,
+      70,   -58,   -58,   126,    54,    59,    61,   -58,    65,   -58,
+     -58,    55,    73,   -58,   -58,   -58,   -58,   -58,   -58,   -58,
+     -58,    44,    44,    44,    44,    44,    44,    44,    96,    96,
+      57,   -58,    79,    44,   -58,   -58,   -58,   -58,   -58,   -58,
+     -58,   -58,    26,    69,    81,    83,   -58,   -58,   -58,    84,
+     -58,    89,   -58,    85,   110,   -58,   102,   100,   -58,    46,
+     -58,   -58,   -58,   -58,    96,   -58,    57,     2,   101,   111,
+     120,   109,   121,   -58,   -58,   -58,   -58,    99,   123,   135,
+     136,   137,   -58,   139,   -58
   };
 
   const signed char
   parser::yydefact_[] =
   {
-      13,     0,     1,     0,     3,     0,     0,     0,     0,    55,
-      56,     0,    50,    53,     0,     0,     6,    11,    12,     0,
-      57,    13,     7,    56,     0,     0,     0,    46,    36,     0,
-      33,     9,     0,     0,     0,     0,     4,     5,    10,     0,
-       8,    54,     0,     0,     0,    47,     0,    44,    45,    35,
-       0,    32,    48,    49,    51,    52,    14,     2,     0,     0,
-       0,     0,     0,     0,     0,     0,    29,    27,    13,     0,
-      43,    37,    38,    39,    40,    41,    42,    25,    26,    31,
-       0,    28,     0,     0,    34,     0,     0,     0,     0,     0,
-       6,     0,    15,    30,    16,     0,     9,     4,     5,    10,
-      18,     0,    17
+      13,     0,     1,     0,     3,     0,     0,     0,     0,    68,
+      69,     0,    62,    66,     0,     0,     6,    11,    12,     0,
+      70,    13,     7,    69,     0,     0,     0,    58,    48,     0,
+      45,     9,     0,     0,     0,     0,     0,     4,     5,    10,
+       0,     8,    67,     0,    37,     0,     0,    59,     0,    56,
+      57,    47,     0,    44,    60,    61,    63,    64,    65,    14,
+       2,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+      41,    39,    13,     0,    55,    49,    50,    51,    52,    53,
+      54,    38,    69,     0,     0,     0,    30,    27,    33,     0,
+      28,    36,    26,    43,     0,    40,     0,     0,    46,     0,
+      31,    34,    29,    32,     0,    25,     0,     0,     0,     0,
+       0,     6,     0,    15,    35,    42,    16,     0,     9,     4,
+       5,    10,    18,     0,    17
   };
 
   const signed char
   parser::yypgoto_[] =
   {
-     -28,   -28,    -3,    33,   -28,    22,    26,    27,    81,   -27,
-     -20,   -28,   -28,    21,   -28,    41,   -28,   -28,    29,   -28,
-     -28,    30,   -28,   -28
+     -58,   -58,    -1,    52,   -58,     0,     3,     4,   -58,   -19,
+     -18,   -53,   -58,    45,   -58,    80,   -15,   -58,   -58,     8,
+     -58,   -58,   -57,   -58,   -58,    58,   -58,   -58
   };
 
   const signed char
   parser::yydefgoto_[] =
   {
-      -1,   101,    11,    12,    13,    14,    15,    16,    43,    17,
-       1,    18,    80,    81,    50,    51,    67,    83,    19,    20,
-      21,    57,    68,    22
+      -1,   123,    43,    12,    13,    84,    85,    86,    44,    17,
+       1,    18,    94,    95,    52,    53,    45,    71,    97,    89,
+      20,    90,    91,   105,    21,    60,    72,    22
   };
 
   const signed char
   parser::yytable_[] =
   {
-      24,    39,    48,    94,    27,    28,    58,    59,    60,    61,
-      62,    63,    29,    30,    25,    32,    33,    26,    95,     3,
-      31,     4,    42,    42,    36,     2,    47,    49,    30,    52,
-      53,     3,    45,     3,    46,     4,    37,    77,    78,     9,
-      23,    34,    35,     5,     6,     7,    38,    41,    82,     8,
-      40,     9,    23,     9,    10,    71,    72,    73,    74,    75,
-      76,     3,    66,     4,    56,    64,    49,    54,    55,    65,
-      69,     5,     6,     7,     3,     4,     4,     8,    70,    87,
-      79,     9,    10,   -24,     5,     6,     7,    85,    86,    56,
-       8,   -21,    96,    97,     9,    10,    98,    99,   -22,   -19,
-     -20,   -23,   100,   102,    88,     0,    93,    44,    89,    90,
-      84,    91,     0,    92
+      11,    14,    24,    40,    15,    16,    27,    28,    31,    19,
+      50,    46,    92,   116,     2,    88,    88,    34,    35,    25,
+      36,    37,    29,     3,    30,     4,    32,    33,    49,    51,
+     117,    54,    55,    99,     5,    30,     6,     7,    26,    11,
+      14,     8,    38,    15,    16,     9,    10,   114,    19,    87,
+      87,    88,    81,     3,    96,     3,    39,     4,    41,    30,
+      75,    76,    77,    78,    79,    80,    42,    83,    83,    68,
+      47,    69,    51,    67,    70,     9,    23,     9,    23,     3,
+      50,     4,    59,    74,    73,    87,    56,    57,    58,    93,
+       5,   -24,     6,     7,   100,   108,   109,     8,    49,   110,
+     111,     9,    10,    83,   112,     3,   101,     4,   102,   103,
+     104,     3,    59,     4,   106,     3,     5,     4,     6,     7,
+     107,   -21,     5,     8,     6,     7,   118,     9,    82,     8,
+      47,   122,    48,     9,    10,   -22,   119,     9,    23,    61,
+      62,    63,    64,    65,    66,   120,   121,   -19,   -20,   -23,
+     124,   115,     0,    98,     0,   113
   };
 
   const signed char
   parser::yycheck_[] =
   {
-       3,    21,    29,    10,     7,     8,    12,    13,    14,    15,
-      16,    17,     7,     8,     8,     3,     4,     8,    25,     8,
-      22,    10,    25,    26,    22,     0,    29,    30,     8,    32,
-      33,     8,    21,     8,    23,    10,    22,    64,    65,    28,
-      29,     5,     6,    18,    19,    20,    22,     9,    68,    24,
-      22,    28,    29,    28,    29,    58,    59,    60,    61,    62,
-      63,     8,     8,    10,    11,     9,    69,    34,    35,     9,
-      26,    18,    19,    20,     8,    10,    10,    24,     9,    82,
-      29,    28,    29,    11,    18,    19,    20,    26,     9,    11,
-      24,    11,    22,    22,    28,    29,    22,    22,    11,    11,
-      11,    11,    29,    10,    82,    -1,    85,    26,    82,    82,
-      69,    82,    -1,    83
+       1,     1,     3,    21,     1,     1,     7,     8,    25,     1,
+      29,    26,    69,    11,     0,    68,    69,     5,     6,     9,
+       8,    25,     7,     9,     9,    11,     3,     4,    29,    30,
+      28,    32,    33,     7,    20,     9,    22,    23,     9,    40,
+      40,    27,    25,    40,    40,    31,    32,   104,    40,    68,
+      69,   104,    67,     9,    72,     9,    25,    11,    25,     9,
+      61,    62,    63,    64,    65,    66,    10,    68,    69,    10,
+      24,    10,    73,    19,     9,    31,    32,    31,    32,     9,
+      99,    11,    12,    10,    29,   104,    34,    35,    36,    32,
+      20,    12,    22,    23,    25,    96,    96,    27,    99,    96,
+      96,    31,    32,   104,    96,     9,    25,    11,    25,    25,
+      21,     9,    12,    11,    29,     9,    20,    11,    22,    23,
+      10,    12,    20,    27,    22,    23,    25,    31,    32,    27,
+      24,    32,    26,    31,    32,    12,    25,    31,    32,    13,
+      14,    15,    16,    17,    18,    25,    25,    12,    12,    12,
+      11,   106,    -1,    73,    -1,    97
   };
 
   const signed char
   parser::yystos_[] =
   {
-       0,    44,     0,     8,    10,    18,    19,    20,    24,    28,
-      29,    36,    37,    38,    39,    40,    41,    43,    45,    52,
-      53,    54,    57,    29,    36,     8,     8,    36,    36,     7,
-       8,    22,     3,     4,     5,     6,    22,    22,    22,    44,
-      22,     9,    36,    42,    42,    21,    23,    36,    43,    36,
-      48,    49,    36,    36,    37,    37,    11,    55,    12,    13,
-      14,    15,    16,    17,     9,     9,     8,    50,    56,    26,
-       9,    36,    36,    36,    36,    36,    36,    43,    43,    29,
-      46,    47,    44,    51,    49,    26,     9,    36,    39,    40,
-      41,    52,    55,    47,    10,    25,    22,    22,    22,    22,
-      29,    35,    10
+       0,    47,     0,     9,    11,    20,    22,    23,    27,    31,
+      32,    39,    40,    41,    42,    43,    44,    46,    48,    56,
+      57,    61,    64,    32,    39,     9,     9,    39,    39,     7,
+       9,    25,     3,     4,     5,     6,     8,    25,    25,    25,
+      47,    25,    10,    39,    45,    53,    53,    24,    26,    39,
+      46,    39,    51,    52,    39,    39,    40,    40,    40,    12,
+      62,    13,    14,    15,    16,    17,    18,    19,    10,    10,
+       9,    54,    63,    29,    10,    39,    39,    39,    39,    39,
+      39,    53,    32,    39,    42,    43,    44,    46,    48,    56,
+      58,    59,    59,    32,    49,    50,    47,    55,    52,     7,
+      25,    25,    25,    25,    21,    60,    29,    10,    39,    42,
+      43,    44,    56,    62,    59,    50,    11,    28,    25,    25,
+      25,    25,    32,    38,    11
   };
 
   const signed char
   parser::yyr1_[] =
   {
-       0,    34,    43,    54,    44,    44,    44,    44,    44,    44,
-      44,    44,    44,    44,    55,    50,    56,    56,    35,    51,
-      51,    51,    51,    51,    51,    41,    41,    57,    46,    46,
-      47,    47,    48,    48,    49,    49,    52,    42,    42,    42,
-      42,    42,    42,    53,    39,    45,    40,    40,    36,    36,
-      36,    37,    37,    37,    38,    38,    38,    38
+       0,    37,    46,    61,    47,    47,    47,    47,    47,    47,
+      47,    47,    47,    47,    62,    54,    63,    63,    38,    55,
+      55,    55,    55,    55,    55,    44,    44,    59,    59,    58,
+      58,    58,    58,    58,    58,    60,    60,    53,    53,    64,
+      49,    49,    50,    50,    51,    51,    52,    52,    56,    45,
+      45,    45,    45,    45,    45,    57,    42,    48,    43,    43,
+      39,    39,    39,    40,    40,    40,    40,    41,    41,    41,
+      41
   };
 
   const signed char
@@ -1667,10 +1809,12 @@ namespace yy {
   {
        0,     2,     3,     1,     3,     3,     2,     2,     3,     3,
        3,     2,     2,     0,     1,     3,     4,     6,     1,     3,
-       3,     2,     3,     3,     0,     5,     5,     4,     1,     0,
-       3,     1,     1,     0,     3,     1,     2,     3,     3,     3,
-       3,     3,     3,     4,     3,     3,     2,     3,     3,     3,
-       1,     3,     3,     1,     3,     1,     1,     1
+       3,     2,     3,     3,     0,     6,     5,     1,     1,     2,
+       1,     2,     2,     1,     2,     2,     0,     1,     3,     4,
+       1,     0,     3,     1,     1,     0,     3,     1,     2,     3,
+       3,     3,     3,     3,     3,     4,     3,     3,     2,     3,
+       3,     3,     1,     3,     3,     3,     1,     3,     1,     1,
+       1
   };
 
 
@@ -1680,12 +1824,14 @@ namespace yy {
   const short
   parser::yyrline_[] =
   {
-       0,   104,   104,   108,   115,   116,   117,   118,   119,   120,
-     121,   122,   123,   125,   129,   135,   139,   150,   168,   182,
-     183,   184,   185,   186,   190,   194,   195,   201,   216,   217,
-     223,   227,   233,   234,   240,   247,   252,   260,   261,   262,
-     263,   264,   265,   270,   282,   295,   304,   305,   313,   314,
-     315,   319,   320,   321,   325,   326,   327,   335
+       0,   114,   114,   118,   125,   126,   127,   128,   129,   130,
+     131,   132,   133,   134,   138,   142,   146,   157,   175,   189,
+     190,   191,   192,   193,   194,   199,   200,   203,   204,   210,
+     211,   212,   213,   214,   215,   219,   220,   224,   225,   234,
+     248,   249,   255,   260,   266,   267,   271,   278,   282,   290,
+     291,   292,   293,   294,   295,   300,   309,   316,   324,   325,
+     333,   334,   335,   339,   340,   341,   342,   346,   347,   348,
+     356
   };
 
   void
@@ -1728,7 +1874,7 @@ namespace yy {
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,    32,    30,     2,    31,     2,    33,     2,     2,
+       2,     2,    35,    33,     2,    34,     2,    36,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1752,10 +1898,10 @@ namespace yy {
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29
+      25,    26,    27,    28,    29,    30,    31,    32
     };
     // Last valid token kind.
-    const int code_max = 284;
+    const int code_max = 287;
 
     if (t <= 0)
       return symbol_kind::S_YYEOF;
@@ -1766,9 +1912,9 @@ namespace yy {
   }
 
 } // yy
-#line 1770 "numgrammar.tab.cc"
+#line 1916 "numgrammar.tab.cc"
 
-#line 341 "numgrammar.y"
+#line 361 "numgrammar.y"
 
 namespace yy {
 

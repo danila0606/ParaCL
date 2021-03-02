@@ -42,6 +42,7 @@
   MUL			"*"
   DIV			"/"
   ASSIGN		"="
+  REM           "%"
 
   LB	        "("
   RB         	")"
@@ -55,7 +56,10 @@
   EQUAL  		"=="
   NOT_EQUAL  	"!="
 
+  AND           "&&"
+
   IF			"if"
+  ELSE          "else"
   WHILE			"while"
   PRINT			"print"
   SCAN			"?"
@@ -86,11 +90,17 @@
 %nterm <std::vector<Node*>> PARAMS
 %nterm <std::vector<Node*>> PARAMS_C
 
+%nterm <std::vector<Node*>> CONS
+
 %nterm <Node*> func_scope
 %nterm <Node*> f_inside_scope
 
 %nterm <Node*> return
 %nterm <Node*> function
+%nterm <Node*> act
+
+%nterm <ScopeNode*> ACTION
+%nterm <ScopeNode*> els
 
 
 %left '+' '-'
@@ -118,18 +128,15 @@ inside_scope:
 |   inside_scope func                   { /* nothing */ }
 |   inside_scope func SCOLON            { /* nothing */ }
 |   inside_scope exprLvl1 SCOLON        { CurScope->PushNode($2); }
-|   inside_scope return SCOLON        { CurScope->PushNode($2); }
-|   inside_scope scope                 { CurScope->PushNode($2); }
+|   inside_scope return SCOLON          { CurScope->PushNode($2); }
+|   inside_scope scope                  { CurScope->PushNode($2); }
 |   inside_scope scope_assignment       {  CurScope->PushNode($2);}
-//|   ERR                               { CurScope->PushNode ($1); }
-|										{}
+|										{ /* nothing */ }
 ;
 
 end_scope:
 	RFB	{ }
 ;
-
-
 
 func_scope:
 	 f_begin_scope f_inside_scope end_scope			{ $$ = CurScope; CurScope = CurScope->GetParent(); CurFunc = nullptr;}
@@ -182,21 +189,47 @@ f_inside_scope:
 	inside_scope assignment SCOLON 		{ CurScope->PushNode ($2); }
 |	inside_scope stream SCOLON 		    { CurScope->PushNode ($2); }
 |	inside_scope condition				{ CurScope->PushNode ($2); }
-|   inside_scope exprLvl1 SCOLON      { CurScope->PushNode($2); }
-|  inside_scope return SCOLON        { CurScope->PushNode($2); }
-//|   inside_scope func                   { /* nothing */ }
-//|   inside_scope func SCOLON            { /* nothing */ }
-//|   ERR                               { CurScope->PushNode ($1); }
-|										{}
+|   inside_scope exprLvl1 SCOLON        { CurScope->PushNode ($2); }
+|   inside_scope return SCOLON          { CurScope->PushNode ($2); }
+|										{ /* nothing */            }
 ;
 
 condition:
-	IF LB math_op RB scope	    { $$ = new ConditionNode($3, static_cast<ScopeNode*>($5), NodeType::IF, @1); }
-|	WHILE LB math_op RB scope	{ $$ = new ConditionNode($3, static_cast<ScopeNode*>($5), NodeType::WHILE, @1); }
+
+    IF LB CONS RB ACTION els { $$ = new ConditionNode($3, static_cast<ScopeNode*>($5), NodeType::IF, @1, $6);}
+|   WHILE LB CONS RB ACTION  { $$ = new ConditionNode($3, static_cast<ScopeNode*>($5), NodeType::WHILE, @1) ;}
+
+ACTION :
+    scope { $$ = static_cast<ScopeNode*>($1);                        }
+|   act   { ScopeNode* child = new ScopeNode (@1,CurScope, CurFunc);
+            child->PushNode($1);
+            $$ = child;  child = nullptr;                            }
+;
+
+act:
+    	 stream SCOLON 		    { $$ = $1; }
+    |	 condition			    { $$ = $1; }
+    |    exprLvl1 SCOLON        { $$ = $1; }
+    |    return SCOLON          { $$ = $1; }
+    |    scope_assignment       { $$ = $1; }
+    |    assignment SCOLON 		{ $$ = $1; }
+;
+
+els :
+       ELSE ACTION { $$ = $2;     }
+|                  { $$ = nullptr;}
+;
+
+
+CONS : math_op          { $$.push_back($1);       }
+|      math_op AND CONS { $$.push_back($1);
+
+                          for (const auto& elem : $3)
+                              $$.push_back(elem);
+                                                  }
 ;
 
 func :
-//DNINFISNFINWEPRNFILWEOBFNWIUFOJHIBWEHWBFHWUYBFWUYHBFWUOFBSUORFBOWHSBFOIHWBFOIHSBFOISEBFOISEBFSIFBSOIFBSEIOFBVSOFBISHGBVIOHBSEBFSIEBFi
 
     VARIABLE ASSIGN FUNCTION func_scope { FuncScopeNode* f_ptr = static_cast<FuncScopeNode*> ($4);
                                           CurScope->AddFuncVariable($1);
@@ -208,7 +241,6 @@ func :
                                           else
                                               func_table.AddLocalFunc($1, f_ptr);
     }
-
 ;
 
 ARGS :
@@ -223,18 +255,17 @@ ARGS_C :
         VARIABLE COMMA ARGS_C { $$.push_back($1);
 
                                 for (const auto& elem : $3)
-                                   $$.push_back(elem);                     }
-    |   VARIABLE              { $$.push_back($1);                    }
+                                   $$.push_back(elem);         }
+
+    |   VARIABLE              { $$.push_back($1);              }
 ;
 
 PARAMS :
 
 
     PARAMS_C {     $$ = $1;    }
-|          {/*no arguments */}
-
+|            {/*no arguments */}
 ;
-
 
 PARAMS_C :
         exprLvl1 COMMA PARAMS_C {
@@ -243,10 +274,9 @@ PARAMS_C :
                                 for (const auto& elem : $3)
                                     $$.push_back(elem);
 
-                                                     }
-    |   exprLvl1                {     $$.push_back($1);                     }
+                                                            }
+    |   exprLvl1                {     $$.push_back($1);     }
 ;
-
 
 return :
     RETURN exprLvl1 {   if (CurFunc == nullptr)
@@ -266,15 +296,12 @@ math_op:
 ;
 
 function :
-//,wfqkmeofjqnw;kjfnbqjkeilfbnqj;fnq;keb e;kvb;qeirfnqierbfhqjbqnbrfcqbwjefq    wefqwfwefwqef
+
     VARIABLE LB PARAMS RB {
         if (!CurScope->GetFuncVariable ($1)) {
-                        if (!func_table.CheckGlobalFunc($1)) {
-
-                                driver->EmergencyExit(@1, yy::Errors::non_existent_variable);
-                            }
-                    }
-
+            if (!func_table.CheckGlobalFunc($1))
+                driver->EmergencyExit(@1, yy::Errors::non_existent_variable);
+        }
         $$ = new FuncNode(@1,$1, $3);
     }
 
@@ -290,7 +317,6 @@ scope_assignment:
         CurScope->AddValue($1, 0);
 
         $$ = new AssignNode(new VariableNode($1, @1), $3, @2);
-
     }
 ;
 
@@ -312,6 +338,7 @@ exprLvl1:
 exprLvl2:
 	exprLvl3 MUL exprLvl2  	{ $$ = new MathOpNode($1, $3, NodeType::MUL, @2); }
 | 	exprLvl3 DIV exprLvl2 	{ $$ = new MathOpNode($1, $3, NodeType::DIV, @2); }
+| 	exprLvl3 REM exprLvl2 	{ $$ = new MathOpNode($1, $3, NodeType::REM, @2); }
 | 	exprLvl3				{ $$ = $1; }
 ;
 

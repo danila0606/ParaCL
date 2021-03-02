@@ -395,22 +395,28 @@ namespace yy {
       // f_inside_scope
       // return
       // function
+      // act
       char dummy1[sizeof (Node*)];
 
+      // ACTION
+      // els
+      char dummy2[sizeof (ScopeNode*)];
+
       // VALUE
-      char dummy2[sizeof (int)];
+      char dummy3[sizeof (int)];
 
       // VARIABLE
       // GLOBAL_FUNC
-      char dummy3[sizeof (std::string)];
+      char dummy4[sizeof (std::string)];
 
       // PARAMS
       // PARAMS_C
-      char dummy4[sizeof (std::vector<Node*>)];
+      // CONS
+      char dummy5[sizeof (std::vector<Node*>)];
 
       // ARGS
       // ARGS_C
-      char dummy5[sizeof (std::vector<std::string>)];
+      char dummy6[sizeof (std::vector<std::string>)];
     };
 
     /// The size of the largest semantic type.
@@ -464,28 +470,31 @@ namespace yy {
     MUL = 260,                     // "*"
     DIV = 261,                     // "/"
     ASSIGN = 262,                  // "="
-    LB = 263,                      // "("
-    RB = 264,                      // ")"
-    LFB = 265,                     // "{"
-    RFB = 266,                     // "}"
-    GREATER = 267,                 // ">"
-    GREATER_OR_EQ = 268,           // ">="
-    LESS = 269,                    // "<"
-    LESS_OR_EQ = 270,              // "<="
-    EQUAL = 271,                   // "=="
-    NOT_EQUAL = 272,               // "!="
-    IF = 273,                      // "if"
-    WHILE = 274,                   // "while"
-    PRINT = 275,                   // "print"
-    SCAN = 276,                    // "?"
-    SCOLON = 277,                  // ";"
-    FUNCTION = 278,                // "func"
-    RETURN = 279,                  // "return"
-    COLON = 280,                   // ":"
-    COMMA = 281,                   // ","
-    ERROR = 282,                   // ERROR
-    VALUE = 283,                   // VALUE
-    VARIABLE = 284                 // VARIABLE
+    REM = 263,                     // "%"
+    LB = 264,                      // "("
+    RB = 265,                      // ")"
+    LFB = 266,                     // "{"
+    RFB = 267,                     // "}"
+    GREATER = 268,                 // ">"
+    GREATER_OR_EQ = 269,           // ">="
+    LESS = 270,                    // "<"
+    LESS_OR_EQ = 271,              // "<="
+    EQUAL = 272,                   // "=="
+    NOT_EQUAL = 273,               // "!="
+    AND = 274,                     // "&&"
+    IF = 275,                      // "if"
+    ELSE = 276,                    // "else"
+    WHILE = 277,                   // "while"
+    PRINT = 278,                   // "print"
+    SCAN = 279,                    // "?"
+    SCOLON = 280,                  // ";"
+    FUNCTION = 281,                // "func"
+    RETURN = 282,                  // "return"
+    COLON = 283,                   // ":"
+    COMMA = 284,                   // ","
+    ERROR = 285,                   // ERROR
+    VALUE = 286,                   // VALUE
+    VARIABLE = 287                 // VARIABLE
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -502,7 +511,7 @@ namespace yy {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 34, ///< Number of tokens.
+        YYNTOKENS = 37, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -512,56 +521,63 @@ namespace yy {
         S_MUL = 5,                               // "*"
         S_DIV = 6,                               // "/"
         S_ASSIGN = 7,                            // "="
-        S_LB = 8,                                // "("
-        S_RB = 9,                                // ")"
-        S_LFB = 10,                              // "{"
-        S_RFB = 11,                              // "}"
-        S_GREATER = 12,                          // ">"
-        S_GREATER_OR_EQ = 13,                    // ">="
-        S_LESS = 14,                             // "<"
-        S_LESS_OR_EQ = 15,                       // "<="
-        S_EQUAL = 16,                            // "=="
-        S_NOT_EQUAL = 17,                        // "!="
-        S_IF = 18,                               // "if"
-        S_WHILE = 19,                            // "while"
-        S_PRINT = 20,                            // "print"
-        S_SCAN = 21,                             // "?"
-        S_SCOLON = 22,                           // ";"
-        S_FUNCTION = 23,                         // "func"
-        S_RETURN = 24,                           // "return"
-        S_COLON = 25,                            // ":"
-        S_COMMA = 26,                            // ","
-        S_ERROR = 27,                            // ERROR
-        S_VALUE = 28,                            // VALUE
-        S_VARIABLE = 29,                         // VARIABLE
-        S_30_ = 30,                              // '+'
-        S_31_ = 31,                              // '-'
-        S_32_ = 32,                              // '*'
-        S_33_ = 33,                              // '/'
-        S_YYACCEPT = 34,                         // $accept
-        S_GLOBAL_FUNC = 35,                      // GLOBAL_FUNC
-        S_exprLvl1 = 36,                         // exprLvl1
-        S_exprLvl2 = 37,                         // exprLvl2
-        S_exprLvl3 = 38,                         // exprLvl3
-        S_assignment = 39,                       // assignment
-        S_stream = 40,                           // stream
-        S_condition = 41,                        // condition
-        S_math_op = 42,                          // math_op
-        S_scope = 43,                            // scope
-        S_inside_scope = 44,                     // inside_scope
-        S_scope_assignment = 45,                 // scope_assignment
-        S_ARGS = 46,                             // ARGS
-        S_ARGS_C = 47,                           // ARGS_C
-        S_PARAMS = 48,                           // PARAMS
-        S_PARAMS_C = 49,                         // PARAMS_C
-        S_func_scope = 50,                       // func_scope
-        S_f_inside_scope = 51,                   // f_inside_scope
-        S_return = 52,                           // return
-        S_function = 53,                         // function
-        S_begin_scope = 54,                      // begin_scope
-        S_end_scope = 55,                        // end_scope
-        S_f_begin_scope = 56,                    // f_begin_scope
-        S_func = 57                              // func
+        S_REM = 8,                               // "%"
+        S_LB = 9,                                // "("
+        S_RB = 10,                               // ")"
+        S_LFB = 11,                              // "{"
+        S_RFB = 12,                              // "}"
+        S_GREATER = 13,                          // ">"
+        S_GREATER_OR_EQ = 14,                    // ">="
+        S_LESS = 15,                             // "<"
+        S_LESS_OR_EQ = 16,                       // "<="
+        S_EQUAL = 17,                            // "=="
+        S_NOT_EQUAL = 18,                        // "!="
+        S_AND = 19,                              // "&&"
+        S_IF = 20,                               // "if"
+        S_ELSE = 21,                             // "else"
+        S_WHILE = 22,                            // "while"
+        S_PRINT = 23,                            // "print"
+        S_SCAN = 24,                             // "?"
+        S_SCOLON = 25,                           // ";"
+        S_FUNCTION = 26,                         // "func"
+        S_RETURN = 27,                           // "return"
+        S_COLON = 28,                            // ":"
+        S_COMMA = 29,                            // ","
+        S_ERROR = 30,                            // ERROR
+        S_VALUE = 31,                            // VALUE
+        S_VARIABLE = 32,                         // VARIABLE
+        S_33_ = 33,                              // '+'
+        S_34_ = 34,                              // '-'
+        S_35_ = 35,                              // '*'
+        S_36_ = 36,                              // '/'
+        S_YYACCEPT = 37,                         // $accept
+        S_GLOBAL_FUNC = 38,                      // GLOBAL_FUNC
+        S_exprLvl1 = 39,                         // exprLvl1
+        S_exprLvl2 = 40,                         // exprLvl2
+        S_exprLvl3 = 41,                         // exprLvl3
+        S_assignment = 42,                       // assignment
+        S_stream = 43,                           // stream
+        S_condition = 44,                        // condition
+        S_math_op = 45,                          // math_op
+        S_scope = 46,                            // scope
+        S_inside_scope = 47,                     // inside_scope
+        S_scope_assignment = 48,                 // scope_assignment
+        S_ARGS = 49,                             // ARGS
+        S_ARGS_C = 50,                           // ARGS_C
+        S_PARAMS = 51,                           // PARAMS
+        S_PARAMS_C = 52,                         // PARAMS_C
+        S_CONS = 53,                             // CONS
+        S_func_scope = 54,                       // func_scope
+        S_f_inside_scope = 55,                   // f_inside_scope
+        S_return = 56,                           // return
+        S_function = 57,                         // function
+        S_act = 58,                              // act
+        S_ACTION = 59,                           // ACTION
+        S_els = 60,                              // els
+        S_begin_scope = 61,                      // begin_scope
+        S_end_scope = 62,                        // end_scope
+        S_f_begin_scope = 63,                    // f_begin_scope
+        S_func = 64                              // func
       };
     };
 
@@ -612,7 +628,13 @@ namespace yy {
       case symbol_kind::S_f_inside_scope: // f_inside_scope
       case symbol_kind::S_return: // return
       case symbol_kind::S_function: // function
+      case symbol_kind::S_act: // act
         value.move< Node* > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_ACTION: // ACTION
+      case symbol_kind::S_els: // els
+        value.move< ScopeNode* > (std::move (that.value));
         break;
 
       case symbol_kind::S_VALUE: // VALUE
@@ -626,6 +648,7 @@ namespace yy {
 
       case symbol_kind::S_PARAMS: // PARAMS
       case symbol_kind::S_PARAMS_C: // PARAMS_C
+      case symbol_kind::S_CONS: // CONS
         value.move< std::vector<Node*> > (std::move (that.value));
         break;
 
@@ -664,6 +687,19 @@ namespace yy {
       {}
 #else
       basic_symbol (typename Base::kind_type t, const Node*& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ScopeNode*&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ScopeNode*& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -758,7 +794,13 @@ switch (yykind)
       case symbol_kind::S_f_inside_scope: // f_inside_scope
       case symbol_kind::S_return: // return
       case symbol_kind::S_function: // function
+      case symbol_kind::S_act: // act
         value.template destroy< Node* > ();
+        break;
+
+      case symbol_kind::S_ACTION: // ACTION
+      case symbol_kind::S_els: // els
+        value.template destroy< ScopeNode* > ();
         break;
 
       case symbol_kind::S_VALUE: // VALUE
@@ -772,6 +814,7 @@ switch (yykind)
 
       case symbol_kind::S_PARAMS: // PARAMS
       case symbol_kind::S_PARAMS_C: // PARAMS_C
+      case symbol_kind::S_CONS: // CONS
         value.template destroy< std::vector<Node*> > ();
         break;
 
@@ -870,13 +913,13 @@ switch (yykind)
       symbol_type (int tok, location_type l)
         : super_type(token_type (tok), std::move (l))
       {
-        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::ADD || tok == token::SUB || tok == token::MUL || tok == token::DIV || tok == token::ASSIGN || tok == token::LB || tok == token::RB || tok == token::LFB || tok == token::RFB || tok == token::GREATER || tok == token::GREATER_OR_EQ || tok == token::LESS || tok == token::LESS_OR_EQ || tok == token::EQUAL || tok == token::NOT_EQUAL || tok == token::IF || tok == token::WHILE || tok == token::PRINT || tok == token::SCAN || tok == token::SCOLON || tok == token::FUNCTION || tok == token::RETURN || tok == token::COLON || tok == token::COMMA || tok == token::ERROR || tok == 43 || tok == 45 || tok == 42 || tok == 47);
+        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::ADD || tok == token::SUB || tok == token::MUL || tok == token::DIV || tok == token::ASSIGN || tok == token::REM || tok == token::LB || tok == token::RB || tok == token::LFB || tok == token::RFB || tok == token::GREATER || tok == token::GREATER_OR_EQ || tok == token::LESS || tok == token::LESS_OR_EQ || tok == token::EQUAL || tok == token::NOT_EQUAL || tok == token::AND || tok == token::IF || tok == token::ELSE || tok == token::WHILE || tok == token::PRINT || tok == token::SCAN || tok == token::SCOLON || tok == token::FUNCTION || tok == token::RETURN || tok == token::COLON || tok == token::COMMA || tok == token::ERROR || tok == 43 || tok == 45 || tok == 42 || tok == 47);
       }
 #else
       symbol_type (int tok, const location_type& l)
         : super_type(token_type (tok), l)
       {
-        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::ADD || tok == token::SUB || tok == token::MUL || tok == token::DIV || tok == token::ASSIGN || tok == token::LB || tok == token::RB || tok == token::LFB || tok == token::RFB || tok == token::GREATER || tok == token::GREATER_OR_EQ || tok == token::LESS || tok == token::LESS_OR_EQ || tok == token::EQUAL || tok == token::NOT_EQUAL || tok == token::IF || tok == token::WHILE || tok == token::PRINT || tok == token::SCAN || tok == token::SCOLON || tok == token::FUNCTION || tok == token::RETURN || tok == token::COLON || tok == token::COMMA || tok == token::ERROR || tok == 43 || tok == 45 || tok == 42 || tok == 47);
+        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::ADD || tok == token::SUB || tok == token::MUL || tok == token::DIV || tok == token::ASSIGN || tok == token::REM || tok == token::LB || tok == token::RB || tok == token::LFB || tok == token::RFB || tok == token::GREATER || tok == token::GREATER_OR_EQ || tok == token::LESS || tok == token::LESS_OR_EQ || tok == token::EQUAL || tok == token::NOT_EQUAL || tok == token::AND || tok == token::IF || tok == token::ELSE || tok == token::WHILE || tok == token::PRINT || tok == token::SCAN || tok == token::SCOLON || tok == token::FUNCTION || tok == token::RETURN || tok == token::COLON || tok == token::COMMA || tok == token::ERROR || tok == 43 || tok == 45 || tok == 42 || tok == 47);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -1076,6 +1119,21 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_REM (location_type l)
+      {
+        return symbol_type (token::REM, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_REM (const location_type& l)
+      {
+        return symbol_type (token::REM, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_LB (location_type l)
       {
         return symbol_type (token::LB, std::move (l));
@@ -1226,6 +1284,21 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_AND (location_type l)
+      {
+        return symbol_type (token::AND, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_AND (const location_type& l)
+      {
+        return symbol_type (token::AND, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_IF (location_type l)
       {
         return symbol_type (token::IF, std::move (l));
@@ -1236,6 +1309,21 @@ switch (yykind)
       make_IF (const location_type& l)
       {
         return symbol_type (token::IF, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_ELSE (location_type l)
+      {
+        return symbol_type (token::ELSE, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_ELSE (const location_type& l)
+      {
+        return symbol_type (token::ELSE, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -1464,7 +1552,7 @@ switch (yykind)
     // Tables.
     // YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
     // STATE-NUM.
-    static const signed char yypact_[];
+    static const short yypact_[];
 
     // YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
     // Performed when YYTABLE does not specify something else to do.  Zero
@@ -1724,8 +1812,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 113,     ///< Last index in yytable_.
-      yynnts_ = 24,  ///< Number of nonterminal symbols.
+      yylast_ = 155,     ///< Last index in yytable_.
+      yynnts_ = 28,  ///< Number of nonterminal symbols.
       yyfinal_ = 2 ///< Termination state number.
     };
 
@@ -1737,7 +1825,7 @@ switch (yykind)
 
 
 } // yy
-#line 1741 "numgrammar.tab.hh"
+#line 1829 "numgrammar.tab.hh"
 
 
 

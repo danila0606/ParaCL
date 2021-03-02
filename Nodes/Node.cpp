@@ -300,9 +300,22 @@ int MathOpNode::Calc() {
 
                 std::cerr << message << std::endl;
                 exit(0);
-                break;
             }
             return left_->Calc() / right_->Calc();
+        }
+        case NodeType::REM: {
+            int divisor = right_->Calc();
+            if (!divisor) {
+                std::string message = std::string("Division by zero {\n") +
+                                      std::string("\tOn line: ") + std::to_string(right_->GetLocation().begin.line);
+
+                message += "\n}";
+
+                std::cerr << message << std::endl;
+                exit(0);
+            }
+            return left_->Calc() % right_->Calc();
+
         }
         case NodeType::GREATER: {
             return (left_->Calc() > right_->Calc());
@@ -353,20 +366,36 @@ int AssignNode::Calc() {
 
 //______________________ConditionNode____________________________
 
+bool ConditionNode::CheckCondition() {
+
+    int ans = 1;
+
+    for (auto& c : conditions_)
+        ans = ans & c->Calc();
+
+    return ans;
+}
+
 int ConditionNode::Calc() {
 
     switch(type_) {
         case (NodeType::IF) : {
 
-            if (condition_->Calc() != 0) {
+
+            if (CheckCondition()) {
                 CurScope = scope_;
                 CurScope->Calc();
                 CurScope = scope_->GetParent();
             }
+            else if (else_scope_) {
+                CurScope = else_scope_;
+                CurScope->Calc();
+                CurScope = else_scope_->GetParent();
+            }
                 return 0;
         }
         case (NodeType::WHILE) : {
-            while (condition_->Calc() != 0) {
+            while (CheckCondition()) {
                 CurScope = scope_;
                 CurScope->Calc();
                 CurScope = scope_->GetParent();
@@ -376,9 +405,7 @@ int ConditionNode::Calc() {
             return 0;
         }
     }
-
     assert(0);
-
 }
 
 //_______________________________________________________________
